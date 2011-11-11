@@ -8,6 +8,7 @@ gem 'rails', '3.1.1'
 group :production do
 	gem 'pg'
 end
+
 group :development, :test do
 	gem 'sqlite3'
 end
@@ -25,7 +26,9 @@ gem 'jquery-rails'
 
 #gem 'thin', '1.2.11'
 
-gem 'eventmachine', '1.0.0.beta.4.1'
+group :development, :test do
+	gem 'eventmachine', '1.0.0.beta.4.1'
+end
 
 gem 'thin'
 
