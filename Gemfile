@@ -11,6 +11,7 @@ end
 
 group :development, :test do
 	gem 'sqlite3'
+	gem 'eventmachine', '1.0.0.beta.4.1'
 end
 
 
@@ -23,12 +24,6 @@ group :assets do
 end
 
 gem 'jquery-rails'
-
-#gem 'thin', '1.2.11'
-
-group :development, :test do
-	gem 'eventmachine', '1.0.0.beta.4.1'
-end
 
 gem 'thin'
 
