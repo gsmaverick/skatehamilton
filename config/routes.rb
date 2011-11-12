@@ -1,4 +1,14 @@
 Skatehamilton::Application.routes.draw do
+  get "home/index"
+
+  root :to => "home#index"
+
+  match "about" => "home#about"
+  match "contact" => "home#contact"
+  match "api" => "home#api"
+
+  resources :rinks
+  
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

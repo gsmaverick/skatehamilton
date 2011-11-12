@@ -14,6 +14,7 @@ group :development do
 	gem 'eventmachine', '1.0.0.beta.4.1'
 end
 
+gem 'geocoder'
 
 # Gems used only for assets and not required
 # in production environments by default.

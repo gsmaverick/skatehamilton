@@ -1,0 +1,214 @@
+// Place all the styles related to the home controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+body {
+  width: 100%;
+  height: 100%;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 62.5%;
+  min-width: 960px;
+  min-height: 400px;
+}
+
+#header {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 44px;
+  z-index: 100;
+
+  color: white;
+
+  -moz-box-shadow: -1px 2px 8px #666;
+  -webkit-box-shadow: -1px 2px 8px #666;
+  box-shadow: -1px 2px 8px #666;
+
+  background: #111;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3F3F3F', endColorstr='#000000');
+  background: -webkit-gradient(linear, left top, left bottom, from(#3F3F3F), to(#111));
+  background: -moz-linear-gradient(top,  #3F3F3F,  #111);
+
+  h1 {
+    float: left;
+    line-height: 44px;
+    font-size: 2.4em;
+    padding-right: 10px;
+  }
+
+  #logo {
+    float: left;
+    padding: 6px 6px;
+  }
+
+  #input_container {
+    left: 50%;
+    position: absolute;
+    margin-left: -225px;
+
+    h3 {
+      display: inline;
+      line-height: 44px;
+      font-size: 1.6em;
+      padding-right: 10px;
+    }
+
+    input {
+      color: #777;
+      font-size: 1.6em;
+
+      outline: none;
+      border: 1px solid black;
+
+      padding: 6px 5px 5px 5px;
+      margin-top: 6px;
+      width: 250px;
+
+      -moz-box-shadow: inset 0px 0px 4px #AAA;
+      -webkit-box-shadow: inset 0px 0px 4px #AAA;
+      box-shadow: inset 0px 0px 4px #AAA;
+    }
+
+    a img {
+      border: none;
+      float: none;
+      vertical-align: middle;
+      margin: -6px 0 0 0px;
+      padding: 6px 6px;
+    }
+  }
+}
+
+#map_canvas {
+  position: absolute;
+  top: 44px;
+  left: 0px;
+  width: 100%;
+  display: block;
+}
+
+#map {
+  z-index: 0;
+  position: relative;
+  height: 100%;
+  margin-left: 400px;
+}
+
+#left_panel {
+  top: 44px;
+  left: 0px;
+  position: absolute;
+  border-right: 4px solid black;
+  z-index: 2;
+  background: white;
+  width: 400px;
+
+  #contents {
+    padding: 30px 15px;
+    display: block;
+
+    h1 {
+      text-align: center;
+      font-size: 3.4em;
+      line-height: 1.6em;
+    }
+
+    h3 {
+      font-weight: normal;
+      text-align: center;
+    }
+
+    #footer {
+      text-align: center;
+      font-size: 1.4em;
+      margin-top: 40px;
+
+      a {
+        padding: 0 4px;
+        color: black;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+    }
+
+    #tasks {
+      list-style: none;
+      margin-top: 1.5em;
+
+      li {
+        padding: 8px 5px;
+        border-bottom: 1px solid #CCC;
+
+        img {
+          padding: 2px;
+          margin-right: 10px;
+          border: 1px solid #999;
+          float: left;
+        }
+
+        h2 {
+          margin-bottom: 3px;
+        }
+
+        h3 {
+          text-align: left;
+          line-height: 1.4em;
+        }
+      }
+
+      li:last-child {
+        border-bottom: none;
+      }
+    }
+
+    form {
+      margin-top: 1.5em;
+
+      label {
+        font-size: 1.6em;
+        line-height: 2;
+      }
+
+      input[type="text"], textarea {
+        border: 1px solid #666;
+        padding: 4px 2px;
+        width: 80%;
+        font-size: 1.6em;
+        font-family: Helvetica, Arial, sans-serif;
+      }
+
+      input[type="submit"] {
+        margin: 15px 0;
+        padding: 8px 20px;
+        font-size: 1.6em;
+        font-weight: bold;
+
+        border: 1px solid #AAA;
+        border-top: 1px solid #BBB;
+
+        background: #C4C4C4;
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#F4F4F4', endColorstr='#C4C4C4');
+        background: -webkit-gradient(linear, left top, left bottom, from(#F4F4F4), to(#C4C4C4));
+        background: -moz-linear-gradient(top,  #F4F4F4, #C4C4C4);
+
+        text-decoration: none;
+        color: rgba(0, 0, 0, .8);
+        text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+      }
+    }
+  }
+}
+  
+#left_panel_control {
+  img {
+    position: absolute;
+    left: 404px;
+    top: 50%;
+    z-index: 1000;
+    cursor: pointer;
+  }
+}
