@@ -4,8 +4,8 @@ Skatehamilton::Application.routes.draw do
   root :to => "home#index"
 
   match "about" => "home#about"
-  match "contact" => "home#contact"
   match "api" => "home#api"
+  match "contact" => "home#contact"
 
   resources :rinks
   

@@ -1,0 +1,44 @@
+<div id="header">
+  <h1>SkateHamilton</h1>
+</div>
+
+<div id="info_bubble" class="tap-closeable">
+  <h3>welcome.</h3>
+  <%= image_tag "close.gif", :alt => "Close" %>
+  <div class="clearfix"></div>
+  <div id="words">Find a place to skate, play hockey and enjoy the outdoors in Hamilton.  Tap to close</div>
+</div>
+
+<div id="cover"></div>
+
+<div id="map"></div>
+
+<script type="text/javascript">
+  var rinks = <%= @Rinks.html_safe %>;
+  var path = '<%= rinks_url %>';
+</script>
+
+<script id="rink-popup-template" type="text/x-handlebars-template">
+  <div id="rink_popup">
+    <div id="inside">
+      <h4>{{name}}</h4>
+      <span>{{address}}&nbsp;&nbsp;&nbsp;({{type}})</span>
+    </div>
+    <div class="disclosure"></div>
+  </div>
+</script>
+
+<script id="rink-details-template" type="text/x-handlbars-template">
+  <div id="rink_details">
+    <h3 style="margin-top: 50px; text-align: center;"><b>Loading...</b></h3>
+  </div>
+</script>
+
+<script id="rink-detail-template" type="text/x-handlbars-template">
+  <div id="inside">
+  {{#with rink}}
+    <h4>{{name}}</h4>
+    <span>{{address}}</span>
+  {{/with}}
+  </div>
+</script>

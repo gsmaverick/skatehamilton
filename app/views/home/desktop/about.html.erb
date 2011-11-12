@@ -1,0 +1,28 @@
+<div id="header">
+  <%= image_tag "logo.png", :size => "32x32", :id => "logo", :alt => "Logo" %>
+  <h1>SkateHamilton</h1>
+
+  <div class="clearfix"></div>
+</div>
+
+<div id="container">
+  <ul id="options">
+    <li><%= link_to 'Home', root_url %></li>
+    <li><%= link_to 'About', about_url, :class => 'active' %></li>
+    <li><%= link_to 'Contact', contact_url %></li>
+    <li><%= link_to 'Developers', api_url %></li>
+  </ul>
+
+  <div id="contents">
+    <h1>About SkateHamilton</h1>
+    <p>
+      SkateHamilton helps you find ice rinks in the Hamilton area to skate, enjoy the outdoors and play team sports.  We have tried to map out all the public and even some private rinks and included information about the activities available at each site.</p>
+    <p>
+      SkateHamilton was built by <a href="http://openhamilton.ca">OpenHamilton.com</a> with help from [[icon designer]] and is licensed under [[Open Data License]].  If you want to get a copy of the dataset that we've compiled click on the <i>Developers</i> link on the left sidebar.
+    </p>
+    <p>
+      SkateHamilton is built with jQuery, zepto.js, handlebars.js and Rails.  You can see the source code running this site and help us develop on <a href="https://github.com/gsmaverick/skatehamilton">GitHub</a>.  Have fun this winter!
+    </p>
+  </div>
+
+</div>

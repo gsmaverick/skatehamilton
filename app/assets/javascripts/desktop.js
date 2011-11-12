@@ -26,11 +26,14 @@ function getViewport() {
   return new Array(vw, vh, vo);
 }
 
-
+function showInfo( info ) {
+  
+  console.log(info);
+}
 
 function initialize() {
   var myOptions = {
-    zoom: 12,
+    zoom: 13,
     center: new google.maps.LatLng(43.24895389686911, -79.86236572265625),
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     streetViewControl: false
@@ -48,9 +51,7 @@ function initialize() {
         info: [rinks[i].id, rinks[i].name, rinks[i].address, rinks[i].rink_type].join("||")
       });
 
-      google.maps.event.addListener(markers[i], 'click', function () {
-        //updateBubble(this.info);
-      })
+      google.maps.event.addListener(markers[i], 'click', function () { showInfo(this.info); });
     }
   });
 }
