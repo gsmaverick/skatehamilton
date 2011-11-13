@@ -45,6 +45,6 @@ module Skatehamilton
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
 
-    config.assets.precompile += ['desktop.css', 'desktop.js']
+    config.assets.precompile += ['desktop.css', 'desktop.js', 'mobile.css', 'mobile.js']
   end
 end
