@@ -1,6 +1,7 @@
 //= require jquery
 //= require jquery_ujs
 //= require handlebars
+
 var gMap;
 var markers = [];
 var _a = "Address...";
