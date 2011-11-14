@@ -18,6 +18,6 @@ class Rink < ActiveRecord::Base
   end
 
   def full_street_address
-    [address, city, province].compact.join(', ')
+    [address, city, 'Ontario', 'Canada'].compact.join(', ')
   end
 end
