@@ -249,7 +249,7 @@ Rink.create([
   {
     name: 'Rosebough Park',
     address: 'Rosebough St.',
-    city: 'Greenville',
+    city: 'Greensville',
     rink_type: 'outdoor',
     phone: '9055463747'
   }

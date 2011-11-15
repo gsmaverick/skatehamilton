@@ -28,8 +28,33 @@ function getViewport() {
 }
 
 function showInfo( info ) {
-  
-  console.log(info);
+  if ($("#contents").css("display") == "none") {
+    $("#contents").css("display", "block");
+    $("#left_panel").css("width", "400px");
+    $("#left_panel_control img").css("left", "404px");
+    $("#left_panel_control img").attr("src", button_tab_out);
+    $("#map").css("margin-left", "400px");
+    google.maps.event.trigger(gMap, 'resize');
+  }
+
+  var ii = info.split('|');
+  var template = Handlebars.compile($("#rink-details-template").html());
+  $("#contents").html(template({
+    "name": ii[1],
+    "rink_type": ii[3].charAt(0).toUpperCase() + ii[3].slice(1),
+    "address": ii[2],
+    "latitude": ii[4],
+    "longitude": ii[5]
+  }));
+
+  if ($("#contents").css("display") == "none") {
+    $("#contents").css("display", "block");
+    $("#left_panel").css("width", "400px");
+    $("#left_panel_control img").css("left", "404px");
+    $("#left_panel_control img").attr("src", button_tab_out);
+    $("#map").css("margin-left", "400px");
+    google.maps.event.trigger(gMap, 'resize');
+  }
 }
 
 function initialize() {
@@ -49,7 +74,7 @@ function initialize() {
         position: new google.maps.LatLng(rinks[i].latitude, rinks[i].longitude),
         map: gMap,
         title: rinks[i].name,
-        info: [rinks[i].id, rinks[i].name, rinks[i].address, rinks[i].rink_type].join("||")
+        info: [rinks[i].id, rinks[i].name, rinks[i].address, rinks[i].rink_type, rinks[i].latitude, rinks[i].longitude].join("|")
       });
 
       google.maps.event.addListener(markers[i], 'click', function () { showInfo(this.info); });
@@ -62,6 +87,19 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
 $(document).ready(function() {
   doLayout();
+
+  /**
+   * Returns the html for showing a static google map
+   * @param {object} context The handlebars context that this helper is called from
+   * @return {string} The html need for showing the static map
+   */
+  Handlebars.registerHelper('staticMap', function(context) {
+    console.log(context);
+    return '<img src="http://maps.googleapis.com/maps/api/staticmap?center=' + 
+         context.latitude + ',' + context.longitude + 
+         '&zoom=15&size=353x240&maptype=roadmap&sensor=false&markers=color:red%7C' +
+         context.latitude + ',' + context.longitude + '" class="map" />';
+  });
 
   Handlebars.registerPartial('footer', Handlebars.compile($("#footer-template").html()));
 

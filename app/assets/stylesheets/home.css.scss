@@ -103,8 +103,10 @@ body {
   z-index: 2;
   background: white;
   width: 400px;
+  overflow-y: auto;
 
   #contents {
+    width: 353px;
     padding: 30px 15px;
     display: block;
 
@@ -198,6 +200,39 @@ body {
         text-decoration: none;
         color: rgba(0, 0, 0, .8);
         text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+      }
+    }
+
+    .rink_details {
+      h2 {
+        font-size: 2.8em;
+      }
+
+      h4 {
+        font-size: 1.6em;
+        font-weight: normal;
+
+        .type {
+          color: green;
+          font-size: 0.9em;
+          font-weight: bold;
+        }
+      }
+
+      h3 {
+        font-weight: bold;
+        font-size: 2em;
+        border-bottom: 1px solid #999;
+        text-align: left;
+        margin-bottom: 5px;
+        margin-top: 15px;
+      }
+
+      h3:first-child { margin-top: 0px; }
+
+      p {
+        font-size: 1.4em;
+        line-height: 1.5;
       }
     }
   }
