@@ -195,42 +195,30 @@ input, button {
   border-top: 1px solid #999;
   box-shadow: 0px -2px 4px #DDD;
   -webkit-box-shadow: 0px -2px 4px #DDD;
+
+  #inside {
+    padding: 8px 8px 5px 10px;
+    margin-right: 54px;
+  }
+
+  h4 {
+    margin: 0 0 4px 0;
+    font-size: 20px;
+    padding: 0;
+  }
+
+  span {
+    color: green;
+    font-weight: bold;
+    font-size: 13px;
+  }
 }
 
-#rink_popup #inside {
-  padding: 8px 8px 5px 10px;
-  margin-right: 42px;
-}
-
-#rink_popup h4 {
-  margin: 0 0 4px 0;
-  font-size: 20px;
-  padding: 0;
-}
-
-#rink_popup span {
-  color: green;
-  font-weight: bold;
-  font-size: 13px;
-}
-
-.disclosure {
+.disclose {
   position: absolute;
   right: 10px;
   top: 50%;
-
-  width: 20px;
-  height: 20px;
-
-  margin-top: -10px;
-  
-  background: black;
-  background-repeat: no-repeat;
-  background-position: -108px 50%;
-  
-  -moz-border-radius: 20px;
-  -webkit-border-radius: 20px;
-  border-radius: 20px;
+  margin-top: -22px;
 }
 
 #rink_details {

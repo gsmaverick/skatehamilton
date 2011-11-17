@@ -89,13 +89,13 @@ google.maps.event.addDomListener(window, 'load', initializeMap);
 
 $(document).ready(function() {
   // Determine whether to display the info bubble or not
-  if ($.cookie('_IS'))
+  //if ($.cookie('_IS'))
+  //  closeInfo();
+  //else
+  $(".tap-closeable").bind('click', function() {
     closeInfo();
-  else
-    $(".tap-closeable").bind('click', function() {
-      closeInfo();
-      $(".tap-closeable").unbind();
-    });
+    $(".tap-closeable").unbind();
+  });
 
   // Action 
   $("#rink_popup").live('click', function() {

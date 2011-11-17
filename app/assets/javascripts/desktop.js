@@ -172,7 +172,7 @@ $(document).ready(function() {
   $("#find_rink").live('click', function(e) {
     e.preventDefault();
 
-    if (navigator.geolocation && false) {
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(pos) {
         centerToLocation(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
       }, function(error) { console.log(error); });
