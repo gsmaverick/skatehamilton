@@ -4,6 +4,7 @@
 
 var gMap;
 var markers = [];
+var locationMarker = null;
 var _a = "Address...";
 var _b = 'undefined';
 
@@ -25,6 +26,22 @@ function getViewport() {
   }
 
   return new Array(vw, vh, vo);
+}
+
+function centerToLocation( location ) {
+  // Remove existing marker from the map
+  if (locationMarker)
+    locationMarker.setMap(null); 
+
+  gMap.setCenter(location);
+  gMap.setZoom(14); // TODO: fix zoom levels based on screen size
+  locationMarker = new google.maps.Marker({
+    animation: google.maps.Animation.DROP,
+    position: location,
+    map: gMap,
+    icon: green_url,
+    title: "Current Location"
+  });
 }
 
 function showInfo( info ) {
@@ -123,11 +140,9 @@ $(document).ready(function() {
 
   $("#search_submit").click(function(e) {
     var geocoder = new google.maps.Geocoder();
-    geocoder.geocode({ 'address' : document.getElementById("search_address").value }, function(results, status) {
-      if ( status == google.maps.GeocoderStatus.OK ) {
-        gMap.setCenter(results[0].geometry.location);
-        gMap.setZoom(14);
-      }
+    geocoder.geocode({ 'address' : document.getElementById("search_address").value + ' Hamilton, Ontario' }, function(results, status) {
+      if ( status == google.maps.GeocoderStatus.OK )
+        centerToLocation(results[0].geometry.location);
     });
     e.preventDefault();
   });
@@ -156,7 +171,16 @@ $(document).ready(function() {
 
   $("#find_rink").live('click', function(e) {
     e.preventDefault();
-    $("#left_panel_control").click();
+
+    if (navigator.geolocation && false) {
+      navigator.geolocation.getCurrentPosition(function(pos) {
+        centerToLocation(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
+      }, function(error) { console.log(error); });
+    } else if ($("#info_bubble").length == 0) {
+      var template = Handlebars.compile($("#info-bubble-template").html());
+      $("body").append(template());
+      $(".tap-closeable").bind('click', function() { $("#info_bubble").remove(); $(".tap-closeable").unbind(); });
+    }
   });
 
   $("#add_rink").live('click', function(e) {

@@ -234,6 +234,9 @@ body {
         font-size: 1.4em;
         line-height: 1.5;
       }
+
+      a { border: none; text-decoration: none; }
+      img { border: none; outline: none; }
     }
   }
 }
@@ -245,5 +248,47 @@ body {
     top: 50%;
     z-index: 1000;
     cursor: pointer;
+  }
+}
+
+#info_bubble {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+
+  width: 242px;
+  margin-left: -115px;
+  padding: 8px 8px 5px 10px;
+
+  z-index: 10;
+  background: white;
+
+  border: 1px solid #BBB;
+  border-right: 1px solid #999;
+  border-bottom: 1px solid #999;
+
+  -moz-box-shadow: 3px 3px 4px #777;
+  -webkit-box-shadow: 3px 3px 4px #777;
+  box-shadow: 3px 3px 4px #777;
+
+  h3 {
+    font-size: 2em;
+    float: left;
+    margin: 0px auto;
+    padding: 2px 0px 2px 0px;
+  }
+
+  img {
+    float: right;
+    padding: 4px 4px 4px 5px;
+    background: black;
+    border-radius: 16px;
+  }
+
+  #words {
+    margin-top: 2px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 1.4em;
   }
 }
