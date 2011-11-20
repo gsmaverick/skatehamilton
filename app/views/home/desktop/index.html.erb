@@ -146,9 +146,13 @@
     <br/>
     <h3>Activities</h3>
     {{#if activities.length}}
+      <table border='0' class="activities">
       {{#each activities}}
-        <p>There are some activities</p>
+        <tr width='100%' style="vertical-align: text-top">
+          <td width='40%'><b>{{name}}</b></td>
+          {{{toString times}}}
       {{/each}}
+      </table>
     {{else}}
       <p>No scheduled public activities.</p>
     {{/if}}

@@ -235,6 +235,13 @@ body {
         line-height: 1.5;
       }
 
+      table.activities {
+        td {
+          font-size: 1.4em;
+          padding-bottom: 3px;
+        }
+      }
+
       a { border: none; text-decoration: none; }
       img { border: none; outline: none; }
     }

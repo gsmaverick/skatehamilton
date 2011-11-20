@@ -4,6 +4,7 @@
 
 var gMap;
 var markers = [];
+var days = ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'];
 var locationMarker = null;
 var _a = "Address...";
 var _b = 'undefined';
@@ -106,6 +107,33 @@ $(document).ready(function() {
 
   Handlebars.registerHelper('capRink', function(rink_type) {
     return rink_type.charAt(0).toUpperCase() + rink_type.slice(1);
+  });
+
+  Handlebars.registerHelper('toString', function(times) {
+    var s = t = u = '';
+  
+    // Looping through all the times that activities take place
+    for(var i = 0, l = times.length; i < l; i++) {
+      t = u = '';
+
+      if (i != 0)
+        t += '<tr><td></td>';
+
+      // Extracting out the days the activity time takes place
+      for(var j = 0, m = times[i].days.length; j < m; j++)
+        if (times[i].days[j] == '1')
+          u += days[j] + ', ';
+      
+      t += '<td width="35%">';
+      t += u.slice(0,-2);
+      t += '</td>';
+      t += '<td>' + times[i].start_time + '-' + times[i].end_time + '</td>';
+      t += '</tr>';
+
+      s += t;
+    }
+
+    return s;
   });
 
   Handlebars.registerPartial('footer', Handlebars.compile($("#footer-template").html()));

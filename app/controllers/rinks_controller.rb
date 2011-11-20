@@ -3,6 +3,10 @@ class RinksController < ApplicationController
     @rink = Rink.find(params[:id])
     @rink['activities'] = @rink.activities
 
+    @rink['activities'].each do |a|
+      a['times'] = a.activity_times
+    end
+
     render :json => @rink
   end
 end
