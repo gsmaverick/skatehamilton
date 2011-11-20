@@ -1,8 +1,9 @@
 //= require zepto
 //= require handlebars
 
-var gMap;
-var markers = [];
+var gMap,
+    markers = [],
+    locationMarker = null;
 
 /**
  * Closes the info bubble shown the first time someone visits 
@@ -54,6 +55,13 @@ function initializeMap() {
       _center = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
       $.cookie('last_lat', pos.coords.latitude);
       $.cookie('last_lng', pos.coords.longitude);
+
+      locationMarker = new google.maps.Marker({
+        position: _center,
+        map: gMap,
+        icon: green_url,
+        title: "Current Location"
+      });
     }, function() {});
   }
 
@@ -69,7 +77,7 @@ function initializeMap() {
 
   // Adds all the markers once the tiles have loaded
   google.maps.event.addListener(gMap, 'tilesloaded', function() {
-    for( var i = 1; i < rinks.length; i++ ) {
+    for(var i = -1, l = rinks.length; ++i < l;) {
       markers[i] = new google.maps.Marker({
         position: new google.maps.LatLng(rinks[i].latitude, rinks[i].longitude),
         map: gMap,
@@ -77,7 +85,7 @@ function initializeMap() {
         info: [rinks[i].id, rinks[i].name, rinks[i].address, rinks[i].rink_type].join("||")
       });
 
-      google.maps.event.addListener(markers[i], 'click', function (e) {
+      google.maps.event.addListener(markers[i], 'click', function(e) {
         updateBubble(this.info);
         $("#map").bind('touchstart', mapTouch);
       })
@@ -88,16 +96,29 @@ function initializeMap() {
 google.maps.event.addDomListener(window, 'load', initializeMap);
 
 $(document).ready(function() {
-  // Determine whether to display the info bubble or not
-  //if ($.cookie('_IS'))
-  //  closeInfo();
-  //else
+  // People will see the pop-up every time so as to give us
+  // more time to load the map and rinks in the background
   $(".tap-closeable").bind('click', function() {
     closeInfo();
     $(".tap-closeable").unbind();
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(pos) {
+        _center = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+        $.cookie('last_lat', pos.coords.latitude);
+        $.cookie('last_lng', pos.coords.longitude);
+
+        locationMarker = new google.maps.Marker({
+          position: _center,
+          map: gMap,
+          icon: green_url,
+          title: "Current Location"
+        });
+      }, function() {});
+    }
   });
 
-  // Action 
+  // Seeing the full details of a rink
   $("#rink_popup").live('click', function() {
     $.getJSON(path + '/' + $("#rink_popup").attr("rink-id"), function(data) {
       var template = Handlebars.compile($("#rink-detail-template").html());

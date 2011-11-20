@@ -140,16 +140,20 @@
 <script id="rink-details-template" type="text/x-handlebars-template">
   <div class="rink_details">
     <h2>{{name}}</h2>
-    <h4>{{address}}&nbsp;&nbsp;<span class="type">({{rink_type}} Rink)</span></h4>
+    <h4>{{address}}&nbsp;&nbsp;<span class="type">({{capRink rink_type}} Rink)</span></h4>
     <h3>Map</h3>
     <a href="http://maps.google.com/maps?daddr={{latitude}},{{longitude}}" target="_blank">{{{staticMap this}}}</a>
     <br/>
     <h3>Activities</h3>
-    <p>No scheduled public activities.</p>
+    {{#if activities.length}}
+      {{#each activities}}
+        <p>There are some activities</p>
+      {{/each}}
+    {{else}}
+      <p>No scheduled public activities.</p>
+    {{/if}}
     <h3>Notes</h3>
-    <p>
-      This park location may have an outdoor rink, depending on the availability of volunteer ice coordinators. Ice availability is also subject to weather conditions. Hockey equipment is not permitted on the ice.
-    </p>
+    <p>{{note}}</p>
   </div>
   {{> footer}}
 </script>

@@ -1,5 +1,9 @@
 class Rink < ActiveRecord::Base
-  validates_presence_of :name, :address, :city, :rink_type
+  has_many :activities
+
+  validates_presence_of :name, :address, :city, :rink_type, :email, :phone
+
+  validates :phone, :length => { :is => 10, :wrong_length => "Wrong length phone" }
 
   # ENUM simluation condition
   validates_inclusion_of :rink_type, :in => [:indoor, :outdoor]

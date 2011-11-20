@@ -16,6 +16,7 @@
 <script type="text/javascript">
   var rinks = <%= @Rinks.html_safe %>;
   var path = '<%= rinks_url %>';
+  var green_url = '<%=asset_path "green.png" %>';
 </script>
 
 <script id="rink-popup-template" type="text/x-handlebars-template">
@@ -37,8 +38,15 @@
 <script id="rink-detail-template" type="text/x-handlbars-template">
   <div id="inside">
   {{#with rink}}
-    <h4>{{name}}</h4>
-    <span>{{address}}</span>
+    <h2>{{name}}</h2>
+    <h3>{{address}}&nbsp;&nbsp;<span class="type">({{rink_type}} Rink)</span></h3>
+    <%= link_to image_tag('direction.png', :size => "18x18") + 'Directions', '#', :class => 'button' %>
+    <%= link_to image_tag('info.png', :size => "18x18") + 'More Info', '#', :class => 'button' %>
+
+    <h4>Activites</h4>
+    <p>No scheduled public activities.</p>
+    <h4>Notes</h4>
+    <p>This park location may have an outdoor rink, depending on the availability of volunteer ice coordinators. Ice availability is also subject to weather conditions. Hockey equipment is not permitted on the ice.</p>
   {{/with}}
   </div>
 </script>
