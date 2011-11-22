@@ -4,30 +4,12 @@
 
 var gMap;
 var markers = [];
-var days = ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'];
+var days = ['Mon','Tues','Wed','Thurs','Fri','Sat','Sun'];
 var locationMarker = null;
 var _a = "Address...";
-var _b = 'undefined';
 
-window.onresize = function() { doLayout(); }
-
-function getViewport() {
-  var vw, vh, vo = 0;
-  if (typeof window.innerWidth != _b) {
-    vw = window.innerWidth, vh = window.innerHeight
-  } else if (typeof document.documentElement != _b && typeof document.documentElement.clientWidth != _b &&
-             document.documentElement.clientWidth != 0) {
-    vw = document.documentElement.clientWidth,
-    vh = document.documentElement.clientHeight,
-    vo = document.documentElement.scrollTop
-  } else {
-    vw = document.getElementsByTagName('body')[0].clientWidth, 
-    vh = document.getElementsByTagName('body')[0].clientHeight,
-    vo = document.getElementsByTagName('body')[0].scrollTop
-  }
-
-  return new Array(vw, vh, vo);
-}
+window.onresize=function(){doLayout();}
+function getViewport(){var w=h=o=0,a='undefined',b=document.getElementsByTagName('body')[0],c=document.documentElement,d=window.innerWidth;if(typeof d!=a)w=d,h=window.innerHeight;else if(typeof c!=a&&typeof c.clientWidth!=a&&c.clientWidth!=0)w=c.clientWidth,h=c.clientHeight,o=c.scrollTop;else w=b.clientWidth,h=b.clientHeight,o=b.scrollTop;return[w,h,o];}
 
 function centerToLocation( location ) {
   // Remove existing marker from the map
@@ -110,24 +92,26 @@ $(document).ready(function() {
   });
 
   Handlebars.registerHelper('toString', function(times) {
-    var s = t = u = '';
+    var s = t = u = '', v = false;
   
     // Looping through all the times that activities take place
     for(var i = 0, l = times.length; i < l; i++) {
+      v = (i+1==l)?true:false;
+
       t = u = '';
 
       if (i != 0)
-        t += '<tr><td></td>';
+        t += v ? '<tr><td class="last"></td>' : '<tr><td></td>';
 
       // Extracting out the days the activity time takes place
       for(var j = 0, m = times[i].days.length; j < m; j++)
         if (times[i].days[j] == '1')
           u += days[j] + ', ';
       
-      t += '<td width="35%">';
+      t += v ? '<td width="35%" class="last">' : '<td width="35%">';
       t += u.slice(0,-2);
       t += '</td>';
-      t += '<td>' + times[i].start_time + '-' + times[i].end_time + '</td>';
+      t += ( v ? '<td class="last">' : '<td>' ) + times[i].start_time + '-' + times[i].end_time + '</td>';
       t += '</tr>';
 
       s += t;

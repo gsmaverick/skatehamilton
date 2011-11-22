@@ -240,6 +240,11 @@ body {
           font-size: 1.4em;
           padding-bottom: 3px;
         }
+
+        td.last {
+          border-bottom: 1px solid #DDD;
+          margin-bottom: 2px;
+        }
       }
 
       a { border: none; text-decoration: none; }

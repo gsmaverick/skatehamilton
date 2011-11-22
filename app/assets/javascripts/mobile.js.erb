@@ -1,0 +1,183 @@
+//= require zepto
+//= require handlebars
+
+// Copyright 2011 OpenHamilton.  All Rights Reserved.
+
+/**
+ * @fileoverview Mobile javascript file to enable a native-like
+ * experience on Android/iOS devices.
+ * @author gavin.schulz@gmail.com (Gavin Schulz)
+ *
+ */
+
+var App = {
+  /**
+   * Map marker that shows the current location on which the map
+   * is centered.
+   * @type {google.maps.marker}
+   *
+   */
+  locationMarker: null,
+
+  /**
+   * URL for the location marker icon used.
+   * @type {string}
+   */
+  locationMarkerIcon: '<%= asset_path "green.png" %>',
+
+  /**
+   * Google Map map object that ties to the main map canvas.
+   * @type {google.maps.map}
+   *
+   */
+  map: null,
+
+  /**
+   * Coordinates on which the map is currently centered.
+   * @type {google.maps.LatLng}
+   *
+   */
+  mapCenter: new google.maps.LatLng(43.24895389686911, -79.86236572265625),
+
+  /**
+   * All the map markers on the map that represent rinks.
+   * @type {array}
+   *
+   */
+  rinkMarkers: [],
+
+  /**
+   * Closes the info bubble shown at load to the visitor.
+   *
+   */
+  closeInfo: function() {
+    $("#info_bubble").remove();
+    $("#cover").remove();
+  },
+
+  init: function() {
+    // People will see the pop-up every time so as to give us
+    // more time to load the map and rinks in the background
+    $(".tap-closeable").bind('click', function() {
+      App.closeInfo();
+      $(".tap-closeable").unbind();
+    });
+
+    // Seeing the full details of a rink
+    $("#rink_popup").live('click', function() {
+      $.getJSON(rinkPath + '/' + $("#rink_popup").attr("rink-id"), function(data) {
+        var template = Handlebars.compile($("#rink-detail-template").html());
+        $("#rink_details").html(template({ rink: data }));
+      });
+
+      var template = Handlebars.compile($("#rink-details-template").html());
+      $("body").append(template({}));
+
+      $("#rink_popup").remove();
+      $("#header").append('<a href="#" id="back">&laquo;</a>');
+      $("#map").hide();
+    });
+
+    // Action fired when you click on the back button
+    $("#back").live('click', function(e) {
+      $("#map").show();
+      $("#back").remove();
+      $("#rink_details").remove();
+      e.preventDefault();
+    });
+  },
+
+  /**
+   * Performs the necessary initializations for the google map to 
+   * start loading while we wait for the DOM to be ready.
+   *
+   */
+  initializeMap: function() {
+    // Fire off the geolocation and let it do its thing
+    if (navigator.geolocation) 
+      navigator.geolocation.getCurrentPosition(function(pos) {
+        App.mapCenter = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+        App.updateCenter();
+      });
+
+    var mapOpts = {
+      zoom: 13,
+      center: App.mapCenter,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      streetViewControl: false,
+      zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_CENTER }
+    };
+
+    App.map = new google.maps.Map(document.getElementById('map'), mapOpts);
+
+    // Adds all the markers once the tiles have loaded
+    google.maps.event.addListener(App.map, 'tilesloaded', function() {
+      for(var i = -1, l = rinks.length; ++i < l;) {
+        App.rinkMarkers[i] = new google.maps.Marker({
+          position: new google.maps.LatLng(rinks[i].latitude, rinks[i].longitude),
+          map: App.map,
+          title: rinks[i].name,
+          info: [rinks[i].id, rinks[i].name, rinks[i].address, rinks[i].rink_type].join('|')
+        });
+
+        google.maps.event.addListener(App.rinkMarkers[i], 'click', function(e) {
+          App.updateBubble(this.info);
+          $("#map").bind('touchstart', App.mapTouch);
+        });
+      }
+    });
+
+    App.updateCenter();
+  },
+
+  /**
+   * Called when the map is touched after a marker has been pressed.  
+   * Close the marker information div and unbinds itself.
+   *
+   */
+  mapTouch: function() {
+    $("#rink_popup").hide();
+    $("#map").unbind('touchstart', App.mapTouch);
+  },
+
+  /**
+   * Updates the bottom pop-up when clicking on a map marker.
+   * Renders a Handlebars template with the provided information.
+   * @param {string} title A pipe seperated string containing rink information.
+   *
+   */
+  updateBubble: function(title) {
+    var parts = title.split('|');
+    var template = Handlebars.compile($("#rink-popup-template").html());
+    $("body").append(template({
+      name:    parts[1],
+      address: parts[2],
+      type:    parts[3].charAt(0).toUpperCase() + parts[3].slice(1)
+    }));
+    $("#rink_popup").attr('rink-id', parts[0]);
+  },
+
+  /**
+   * Updates the position of the map marker to denote the position
+   * the map is centered on.
+   */
+  updateCenter: function() {
+    // Update the cookies for next time
+    $.cookie('last_lat', App.mapCenter.lat());
+    $.cookie('last_lng', App.mapCenter.lng());
+
+    this.locationMarker = null;
+
+    // Center on current location
+    this.locationMarker = new google.maps.Marker({
+      position: this.mapCenter,
+      map: this.map,
+      icon: this.locationMarkerIcon,
+      title: "Current Location"
+    });
+  },
+};
+
+// Fire off the app
+google.maps.event.addDomListener(window, 'load', App.initializeMap);
+$(document).ready(App.init);

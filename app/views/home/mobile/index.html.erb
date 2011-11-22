@@ -15,8 +15,7 @@
 
 <script type="text/javascript">
   var rinks = <%= @Rinks.html_safe %>;
-  var path = '<%= rinks_url %>';
-  var green_url = '<%=asset_path "green.png" %>';
+  var rinkPath = '<%= rinks_path %>';
 </script>
 
 <script id="rink-popup-template" type="text/x-handlebars-template">
