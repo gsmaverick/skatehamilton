@@ -1,0 +1,364 @@
+//= require jquery
+//= require handlebars
+
+// Copyright 2011 OpenHamilton.  All Rights Reserved.
+
+/**
+ * @fileoverview Main javascript file served to desktop users.
+ * @author gavin.schulz@gmail.com (Gavin Schulz)
+ *
+ */
+
+var App = {
+  /**
+   * A series of cached jQuery selectors that get used a lot.
+   */
+  $content: null, $left_panel: null, $map: null, $control_img: null, $search_submit: null,
+
+  /**
+   * Textual abbreviations of days of the week.
+   * @type {array}
+   *
+   */
+  days: ['Mon','Tues','Wed','Thurs','Fri','Sat','Sun'],
+
+  /**
+   * Map marker that shows the current location on which the map
+   * is centered.
+   * @type {google.maps.marker}
+   *
+   */
+  locationMarker: null,
+
+  /**
+   * URL for the location marker icon used.
+   * @type {string}
+   */
+  locationMarkerIcon: '<%= asset_path "green.png" %>',
+
+  /**
+   * Google Map map object that ties to the main map canvas.
+   * @type {google.maps.map}
+   *
+   */
+  map: null,
+
+  /**
+   * Coordinates on which the map is currently centered.
+   * @type {google.maps.LatLng}
+   *
+   */
+  mapCenter: new google.maps.LatLng(43.24895389686911, -79.86236572265625),
+
+  /**
+   * Object containing google maps options.
+   * @type {object}
+   *
+   */
+  mapOptions: {
+    zoom: 13,
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    streetViewControl: false
+  },
+
+  /**
+   * All the map markers on the map that represent rinks.
+   * @type {array}
+   *
+   */
+  rinkMarkers: [],
+
+  /**
+   * Default contents of the header search input field.
+   * @type {string}
+   *
+   */
+  textFill: 'Address...',
+
+  /**
+   * Minified function to get size of browser viewport.
+   * @return {array} An array containing the height width and scrollTop of the browser.
+   *
+   */
+  getViewport: function(){var w=h=o=0,a='undefined',b=document.getElementsByTagName('body')[0],c=document.documentElement,d=window.innerWidth;if(typeof d!=a)w=d,h=window.innerHeight;else if(typeof c!=a&&typeof c.clientWidth!=a&&c.clientWidth!=0)w=c.clientWidth,h=c.clientHeight,o=c.scrollTop;else w=b.clientWidth,h=b.clientHeight,o=b.scrollTop;return[w,h,o];},
+
+  /**
+   * Centers the map to the new location specified and updates 
+   * the center location marker.
+   * @param {google.maps.LatLng} location New position to center map on.
+   *
+   */
+  centerToLocation: function(location) {
+    // Remove existing marker from the map
+    if (this.locationMarker)
+      this.locationMarker.setMap(null);
+    
+    this.mapCenter = location || this.mapCenter;
+    
+    this.map.setCenter(this.mapCenter);
+    this.map.setZoom(14); // TODO: fix zoom levels based on screen size
+    this.locationMarker = new google.maps.Marker({
+      animation: google.maps.Animation.DROP,
+      position: this.mapCenter,
+      map: this.map,
+      icon: this.locationMarkerIcon,
+      title: "Current Location"
+    });
+  },
+
+  /**
+   * Adjusts the height of all the elements when the screen 
+   * is resized so as to prevent scrollbars from appearing.
+   *
+   */
+  doLayout: function() {
+    var bodyHeight = App.getViewport()[1];
+    bodyHeight = (bodyHeight < 400) ? 400 : bodyHeight;
+
+    var contentHeight = (bodyHeight - 44);
+
+    // This might run before we've set up the selector caches
+    App.$map = App.$map || $('#map');
+    App.$left_panel = App.$left_panel || $('#left_panel');
+
+    App.$map.css('height', contentHeight + "px");    
+    App.$left_panel.css('height', contentHeight + "px");
+    $("#map_canvas").css('height', contentHeight + "px");
+  },
+
+  /**
+   * Sets up Handlebars.js helpers and partials that are
+   * used throughout the application.
+   *
+   */
+  hbInit: function() {
+    // Registers a footer partial for access in other templates
+    Handlebars.registerPartial('footer', Handlebars.compile($("#footer-template").html()));
+
+    /**
+     * Returns the html for showing a static google map
+     * @param {object} context The handlebars context that this helper is called from
+     * @return {string} The html need for showing the static map
+     *
+     */
+    Handlebars.registerHelper('staticMap', function(context) {
+      return '<img src="http://maps.googleapis.com/maps/api/staticmap?center=' + 
+           context.latitude + ',' + context.longitude + 
+           '&zoom=15&size=353x240&maptype=roadmap&sensor=false&markers=color:red%7C' +
+           context.latitude + ',' + context.longitude + '" class="map" />';
+    });
+
+    /**
+     * Capitalizes the first letter of the rink type.
+     * @param {string} rink_type Type of rink being displayed.
+     *
+     */
+    Handlebars.registerHelper('capRink', function(rink_type) {
+      return rink_type.charAt(0).toUpperCase() + rink_type.slice(1);
+    });
+
+    Handlebars.registerHelper('toString', function(times) {
+      var s = t = u = '', v = false;
+    
+      // Looping through all the times that activities take place
+      for(var i = 0, l = times.length; i < l; i++) {
+        v = (i+1 == l) ? true : false;
+
+        t = u = '';
+
+        if (i != 0)
+          t += v ? '<tr><td class="last"></td>' : '<tr><td></td>';
+
+        // Extracting out the days the activity time takes place
+        for(var j = 0, m = times[i].days.length; j < m; j++)
+          if (times[i].days[j] == '1')
+            u += App.days[j] + ', ';
+        
+        t += v ? '<td width="35%" class="last">' : '<td width="35%">';
+        t += u.slice(0,-2);
+        t += '</td>';
+        t += ( v ? '<td class="last">' : '<td>' ) + times[i].start_time + '-' + times[i].end_time + '</td>';
+        t += '</tr>';
+
+        s += t;
+      }
+
+      return s;
+    });
+  },
+
+  /**
+   * Initializes the application.
+   */
+  init: function() {
+    // Properly size all the elements
+    App.doLayout();
+
+    // Set up our helpers for Handlebars
+    App.hbInit();
+
+    // Cache some common selectors
+    App.$content       = $('#contents');
+    App.$left_panel    = $('#left_panel');
+    App.$map           = $('#map');
+    App.$control_img   = $('#left_panel_control img');
+    App.$search_submit = $('#search_submit');
+
+    // Make sure panel is displayed
+    App.togglePanel(true);
+   
+    App.registerEvents();
+  },
+
+  /**
+   * Attaches an array of IDs to automatically load a template on click.
+   * 
+   */
+  simpleClick: function(elems) {
+    $.each(elems, function(key, value) {
+      var tmpl = value['tmpl'];
+      $(value['id']).live('click', function(e) {
+        App.loadTemplate(tmpl);
+        e.preventDefault();
+      });
+    });
+  },
+
+  registerEvents: function() {
+    App.$control_img.live('click', function() { App.togglePanel(); });
+
+    // Submit button/image handler
+    App.$search_submit.click(function(e) {
+      var geocoder = new google.maps.Geocoder();
+      geocoder.geocode({'address' : document.getElementById("search_address").value + ' Hamilton, Ontario'}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK)
+          App.centerToLocation(results[0].geometry.location);
+      });
+
+      e.preventDefault();
+    });
+
+    $("#search_address").focus(function() {
+      this.value = (this.value == App.textFill) ? this.value = "" : this.value;
+
+      // When clicking on the google map it does not receive focus so we
+      // have to simuate it
+      var self = google.maps.event.addListener(App.map, 'mousedown', function() {
+        $("#search_address").trigger('blur');
+        google.maps.event.removeListener(self);
+      });
+    });
+
+    $("#search_address").blur(function() {
+      this.value = (this.value.trim() == '') ? this.value = App.textFill : this.value;
+    });
+
+    // Since we're not using an actual form atm
+    // we must fake the ``enter`` to submit functionality
+    $("#search_address").keydown(function(e) {
+      if (e.keyCode == '13') 
+        App.$search_submit.trigger("click");
+    });
+
+    $("#find_rink").live('click', function(e) {
+      e.preventDefault();
+
+      if (navigator.geolocation) { // Geolocate ourselves to the user's position
+        navigator.geolocation.getCurrentPosition(function(pos) {
+          App.centerToLocation(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
+        }, function(error) { console.log(error); });
+      } else if ($("#info_bubble").length == 0) { // Display a helpful info bubble
+        var template = Handlebars.compile($("#info-bubble-template").html());
+        $("body").append(template());
+        $(".tap-closeable").bind('click', function() { $("#info_bubble").remove(); $(".tap-closeable").unbind(); });
+      }
+
+      App.togglePanel();
+    });
+
+    App.simpleClick([{'id': '#add_rink', 'tmpl': '#add-rink-template'}, {'id': '#mobile', 'tmpl': '#mobile-template'}, {'id': '#home_link', 'tmpl': '#home-template'}]);
+  },
+
+  /**
+   * Loads an info template into the left panel.
+   * @param {string} tmpl The id of the template to be loaded.
+   *
+   */
+  loadTemplate: function(tmpl) {
+    // Compile the template and load it up
+    var template = Handlebars.compile($(tmpl).html());
+    App.$content.html(template());
+
+    // Make sure the left panel is displayed
+    App.togglePanel(true);
+  },
+
+  /**
+   * Initializes the google map and adds the rink markers 
+   * to the map canvas.
+   *
+   */
+  initMap: function() {
+    App.map = new google.maps.Map(document.getElementById('map'), App.mapOptions);
+    App.centerToLocation();
+
+    // Adds all the markers once the tiles have loaded
+    google.maps.event.addListener(App.map, 'tilesloaded', function() {
+      for (var i = 0; i < rinks.length; i++) {
+        App.rinkMarkers[i] = new google.maps.Marker({
+          position: new google.maps.LatLng(rinks[i].latitude, rinks[i].longitude),
+          map: App.map,
+          title: rinks[i].name,
+          id: rinks[i].id
+        });
+
+        google.maps.event.addListener(App.rinkMarkers[i], 'click', function () { App.showInfo(this.id); });
+      }
+    });
+
+  },
+
+  /**
+   * Loads the rink information into the left panel.
+   * @param {number} id Rink which was clicked on the map.
+   *
+   */
+  showInfo: function(id) {
+    $.getJSON(path + '/' + id, function(data) {
+      var template = Handlebars.compile($("#rink-details-template").html());
+      data.activitiesLen = [];
+      $("#contents").html(template(data));
+
+      App.togglePanel(true);
+    });
+  },
+
+  /**
+   * Toggles the left panel 
+   * @param {bool} show Flag to force the showing of the panel.
+   *
+   */
+  togglePanel: function(show) {
+    if (App.$content.css("display") == "none" || show) {
+      App.$content.css("display", "block");
+      App.$left_panel.css("width", "400px");
+      App.$control_img.css("left", "404px");
+      App.$control_img.attr("src", button_tab_out);
+      App.$map.css("margin-left", "400px");
+    } else {
+      App.$content.css("display", "none");
+      App.$left_panel.css("width", "0px");
+      App.$control_img.css("left", "4px");
+      App.$control_img.attr("src", button_tab_in);
+      App.$map.css("margin-left", "0px");
+    }
+
+    if (App.map)
+      google.maps.event.trigger(App.map, 'resize');
+  },
+};
+
+// Register some handlers to start the app
+window.onresize = function() { App.doLayout() };
+google.maps.event.addDomListener(window, 'load', App.initMap);
+$(document).ready(App.init);

@@ -57,14 +57,6 @@
   <div id="map"></div>
 </div>
 
-<script type="text/javascript">
-  var button_tab_out = "<%= image_path 'button_tab_out.png' %>";
-  var button_tab_in  = "<%= image_path 'button_tab_in.png' %>";
-  var rinks = <%=@Rinks.html_safe %>;
-  var path = '<%=rinks_url %>';
-  var green_url = '<%=asset_path "green.png" %>';
-</script>
-
 <script id="footer-template" type="text/x-handlebars-template">
   <div id="footer">
     <%= link_to "home", "#", :id => "home_link" %>&nbsp;|&nbsp;<%= link_to "about", about_url %>&nbsp;|&nbsp;<%= link_to "contact", contact_url %>&nbsp;|&nbsp;<%= link_to "developers", api_url %>&nbsp;|&nbsp;<%= link_to "openhamilton", "http://openhamilton.ca" %>
@@ -171,4 +163,12 @@
       Find skating rinks nearby by entering a street address in the box above.
     </div>
 </div>
+</script>
+
+<script type="text/javascript">
+  var button_tab_out = "<%= image_path 'button_tab_out.png' %>";
+  var button_tab_in  = "<%= image_path 'button_tab_in.png' %>";
+  var rinks = <%=@Rinks.html_safe %>;
+  var path = '<%=rinks_url %>';
+  var green_url = '<%=asset_path "green.png" %>';
 </script>
