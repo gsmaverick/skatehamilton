@@ -13,7 +13,8 @@ var App = {
   /**
    * A series of cached jQuery selectors that get used a lot.
    */
-  $content: null, $left_panel: null, $map: null, $control_img: null, $search_submit: null,
+  $content: null, $left_panel: null, $map: null, $control_img: null,
+  $search_submit: null, $button_out: null, $button_in: null,
 
   /**
    * Textual abbreviations of days of the week.
@@ -33,6 +34,7 @@ var App = {
   /**
    * URL for the location marker icon used.
    * @type {string}
+   *
    */
   locationMarkerIcon: '<%= asset_path "green.png" %>',
 
@@ -112,17 +114,17 @@ var App = {
    *
    */
   doLayout: function() {
-    var bodyHeight = App.getViewport()[1];
+    var bodyHeight = this.getViewport()[1];
     bodyHeight = (bodyHeight < 400) ? 400 : bodyHeight;
 
     var contentHeight = (bodyHeight - 44);
 
     // This might run before we've set up the selector caches
-    App.$map = App.$map || $('#map');
-    App.$left_panel = App.$left_panel || $('#left_panel');
+    this.$map = this.$map || $('#map');
+    this.$left_panel = this.$left_panel || $('#left_panel');
 
-    App.$map.css('height', contentHeight + "px");    
-    App.$left_panel.css('height', contentHeight + "px");
+    this.$map.css('height', contentHeight + "px");    
+    this.$left_panel.css('height', contentHeight + "px");
     $("#map_canvas").css('height', contentHeight + "px");
   },
 
@@ -132,6 +134,8 @@ var App = {
    *
    */
   hbInit: function() {
+    var self = this;
+
     // Registers a footer partial for access in other templates
     Handlebars.registerPartial('footer', Handlebars.compile($("#footer-template").html()));
 
@@ -157,33 +161,44 @@ var App = {
       return rink_type.charAt(0).toUpperCase() + rink_type.slice(1);
     });
 
-    Handlebars.registerHelper('toString', function(times) {
-      var s = t = u = '', v = false;
-    
-      // Looping through all the times that activities take place
-      for(var i = 0, l = times.length; i < l; i++) {
-        v = (i+1 == l) ? true : false;
-
-        t = u = '';
-
-        if (i != 0)
-          t += v ? '<tr><td class="last"></td>' : '<tr><td></td>';
+    Handlebars.registerHelper('activity', function(activity) {
+      if (activity.times.length == 1) {
+        var dayString = '';
 
         // Extracting out the days the activity time takes place
-        for(var j = 0, m = times[i].days.length; j < m; j++)
-          if (times[i].days[j] == '1')
-            u += App.days[j] + ', ';
-        
-        t += v ? '<td width="35%" class="last">' : '<td width="35%">';
-        t += u.slice(0,-2);
-        t += '</td>';
-        t += ( v ? '<td class="last">' : '<td>' ) + times[i].start_time + '-' + times[i].end_time + '</td>';
-        t += '</tr>';
+        for(var j = 0, m = activity.times[0].days.length; j < m; j++)
+          if (activity.times[0].days[j] == '1')
+            dayString += self.days[j] + ', ';
 
-        s += t;
+        var template = Handlebars.compile($("#activity-single-template").html());
+        return template({
+          'name': activity['name'],
+          'day': dayString.slice(0, -2),
+          'times': activity.times[0].start_time + '-' + activity.times[0].end_time,
+          'class': 'last'
+        });
+      } else {
+        var s = '', dayString = '';
+        var template = Handlebars.compile($("#activity-single-template").html());
+
+        for(var i = 0, m = activity.times.length; i < m; i++) {
+          dayString = '';
+
+          // Extracting out the days the activity time takes place
+          for(var j = 0, n = activity.times[i].days.length; j < n; j++)
+            if (activity.times[i].days[j] == '1')
+              dayString += self.days[j] + ', ';
+          
+          s += template({
+            'name': (i > 0) ? '' : activity['name'],
+            'day': dayString.slice(0, -2),
+            'times': activity.times[i].start_time + '-' + activity.times[i].end_time,
+            'class': (i + 1 == m) ? 'last' : ''
+          });
+        }
+
+        return s;
       }
-
-      return s;
     });
   },
 
@@ -192,22 +207,24 @@ var App = {
    */
   init: function() {
     // Properly size all the elements
-    App.doLayout();
+    this.doLayout();
 
     // Set up our helpers for Handlebars
-    App.hbInit();
+    this.hbInit();
 
     // Cache some common selectors
-    App.$content       = $('#contents');
-    App.$left_panel    = $('#left_panel');
-    App.$map           = $('#map');
-    App.$control_img   = $('#left_panel_control img');
-    App.$search_submit = $('#search_submit');
+    this.$content       = $('#contents');
+    this.$left_panel    = $('#left_panel');
+    this.$map           = $('#map');
+    this.$control_img   = $('#left_panel_control img');
+    this.$search_submit = $('#search_submit');
+    this.$button_in     = $('#button_in');
+    this.$button_out    = $('#button_out');
 
     // Make sure panel is displayed
-    App.togglePanel(true);
+    this.togglePanel(true);
    
-    App.registerEvents();
+    this.registerEvents();
   },
 
   /**
@@ -215,20 +232,25 @@ var App = {
    * 
    */
   simpleClick: function(elems) {
+    var self = this;
+
     $.each(elems, function(key, value) {
       var tmpl = value['tmpl'];
       $(value['id']).live('click', function(e) {
-        App.loadTemplate(tmpl);
+        self.loadTemplate(tmpl);
         e.preventDefault();
       });
     });
   },
 
   registerEvents: function() {
-    App.$control_img.live('click', function() { App.togglePanel(); });
+    // For reference back to the App object when we're in event closures
+    var self = this;
+
+    this.$control_img.live('click', function(){ self.togglePanel(); });
 
     // Submit button/image handler
-    App.$search_submit.click(function(e) {
+    this.$search_submit.click(function(e) {
       var geocoder = new google.maps.Geocoder();
       geocoder.geocode({'address' : document.getElementById("search_address").value + ' Hamilton, Ontario'}, function(results, status) {
         if (status == google.maps.GeocoderStatus.OK)
@@ -238,26 +260,26 @@ var App = {
       e.preventDefault();
     });
 
-    $("#search_address").focus(function() {
-      this.value = (this.value == App.textFill) ? this.value = "" : this.value;
+    $("#search_address").focus(function(){
+      this.value = (this.value == self.textFill) ? this.value = "" : this.value;
 
       // When clicking on the google map it does not receive focus so we
       // have to simuate it
-      var self = google.maps.event.addListener(App.map, 'mousedown', function() {
+      var mapFocus = google.maps.event.addListener(self.map, 'mousedown', function(){
         $("#search_address").trigger('blur');
-        google.maps.event.removeListener(self);
+        google.maps.event.removeListener(mapFocus);
       });
     });
 
-    $("#search_address").blur(function() {
-      this.value = (this.value.trim() == '') ? this.value = App.textFill : this.value;
+    $("#search_address").blur(function(){
+      this.value = (this.value.trim() == '') ? this.value = self.textFill : this.value;
     });
 
     // Since we're not using an actual form atm
     // we must fake the ``enter`` to submit functionality
     $("#search_address").keydown(function(e) {
       if (e.keyCode == '13') 
-        App.$search_submit.trigger("click");
+        self.$search_submit.trigger("click");
     });
 
     $("#find_rink").live('click', function(e) {
@@ -265,18 +287,23 @@ var App = {
 
       if (navigator.geolocation) { // Geolocate ourselves to the user's position
         navigator.geolocation.getCurrentPosition(function(pos) {
-          App.centerToLocation(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
+          self.centerToLocation(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
         }, function(error) { console.log(error); });
       }
-      // Display a helpful info bubble
-      var template = Handlebars.compile($("#info-bubble-template").html());
-      $("body").append(template());
-      $(".close").bind('click', function(){ $("#bubble_container").remove(); });
 
-      App.togglePanel();
+      // Display a helpful info bubble
+      if ($("#info_bubble").length == 0) {
+        var template = Handlebars.compile($("#info-bubble-template").html());
+        $("body").append(template());
+        $(".close").bind('click', function(){
+          $("#bubble_container").remove();
+        });
+      }
+
+      self.togglePanel();
     });
 
-    App.simpleClick([{'id': '#add_rink', 'tmpl': '#add-rink-template'}, {'id': '#mobile', 'tmpl': '#mobile-template'}, {'id': '#home_link', 'tmpl': '#home-template'}, {'id': '#logo', 'tmpl': '#home-template'}]);
+    this.simpleClick([{'id': '#add_rink', 'tmpl': '#add-rink-template'}, {'id': '#mobile', 'tmpl': '#mobile-template'}, {'id': '#home_link', 'tmpl': '#home-template'}, {'id': '#logo', 'tmpl': '#home-template'}]);
   },
 
   /**
@@ -287,10 +314,10 @@ var App = {
   loadTemplate: function(tmpl) {
     // Compile the template and load it up
     var template = Handlebars.compile($(tmpl).html());
-    App.$content.html(template());
+    this.$content.html(template());
 
     // Make sure the left panel is displayed
-    App.togglePanel(true);
+    this.togglePanel(true);
   },
 
   /**
@@ -299,20 +326,22 @@ var App = {
    *
    */
   initMap: function() {
-    App.map = new google.maps.Map(document.getElementById('map'), App.mapOptions);
-    App.centerToLocation();
+    var self = this;
+    
+    this.map = new google.maps.Map(document.getElementById('map'), this.mapOptions);
+    this.centerToLocation();
 
     // Adds all the markers once the tiles have loaded
-    google.maps.event.addListener(App.map, 'tilesloaded', function() {
+    google.maps.event.addListener(this.map, 'tilesloaded', function(){
       for (var i = 0; i < rinks.length; i++) {
-        App.rinkMarkers[i] = new google.maps.Marker({
+        self.rinkMarkers[i] = new google.maps.Marker({
           position: new google.maps.LatLng(rinks[i].latitude, rinks[i].longitude),
-          map: App.map,
+          map: self.map,
           title: rinks[i].name,
           id: rinks[i].id
         });
 
-        google.maps.event.addListener(App.rinkMarkers[i], 'click', function () { App.showInfo(this.id); });
+        google.maps.event.addListener(self.rinkMarkers[i], 'click', function(){ App.showInfo(this.id); });
       }
     });
 
@@ -324,12 +353,14 @@ var App = {
    *
    */
   showInfo: function(id) {
-    $.getJSON(path + '/' + id, function(data) {
+    var self = this;
+
+    $.getJSON(rink_path + '/' + id, function(data) {
       var template = Handlebars.compile($("#rink-details-template").html());
       data.activitiesLen = [];
       $("#contents").html(template(data));
 
-      App.togglePanel(true);
+      self.togglePanel(true);
     });
   },
 
@@ -339,26 +370,28 @@ var App = {
    *
    */
   togglePanel: function(show) {
-    if (App.$content.css("display") == "none" || show) {
-      App.$content.css("display", "block");
-      App.$left_panel.css("width", "400px");
-      App.$control_img.css("left", "404px");
-      App.$control_img.attr("src", button_tab_out);
-      App.$map.css("margin-left", "400px");
+    if (this.$content.css("display") == "none" || show) {
+      this.$button_in.css('display', 'none');
+      this.$button_out.css('display', 'block');
+      this.$content.css("display", "block");
+      this.$left_panel.css("width", "400px");
+      this.$control_img.css("left", "404px");
+      this.$map.css("margin-left", "400px");
     } else {
-      App.$content.css("display", "none");
-      App.$left_panel.css("width", "0px");
-      App.$control_img.css("left", "4px");
-      App.$control_img.attr("src", button_tab_in);
-      App.$map.css("margin-left", "0px");
+      this.$content.css("display", "none");
+      this.$left_panel.css("width", "0px");
+      this.$control_img.css("left", "4px");
+      this.$button_out.css('display', 'none');
+      this.$button_in.css('display', 'block');
+      this.$map.css("margin-left", "0px");
     }
 
-    if (App.map)
-      google.maps.event.trigger(App.map, 'resize');
+    if (this.map)
+      google.maps.event.trigger(this.map, 'resize');
   },
 };
 
 // Register some handlers to start the app
-window.onresize = function() { App.doLayout() };
-google.maps.event.addDomListener(window, 'load', App.initMap);
-$(document).ready(App.init);
+window.onresize = function(){App.doLayout()};
+google.maps.event.addDomListener(window, 'load', function(){App.initMap();});
+$(document).ready(function(){App.init();});

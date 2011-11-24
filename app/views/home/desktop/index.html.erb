@@ -48,7 +48,8 @@
 
 <!-- Open/close leftbar -->
 <div id="left_panel_control">
-  <%= image_tag "button_tab_out.png", :alt => "Toggle panel" %>
+  <%= image_tag "button_tab_out.png", :alt => "Toggle panel", :id => "button_out" %>
+  <%= image_tag "button_tab_in.png", :alt => "Toggle panel", :id => "button_in", :style => "display:none" %>
 </div>
 
 
@@ -138,11 +139,9 @@
     <br/>
     <h3>Activities</h3>
     {{#if activities.length}}
-      <table border='0' class="activities">
+      <table border='0' class='activities' cellspacing='0' style='width:100%;'>
       {{#each activities}}
-        <tr width='100%' style="vertical-align: text-top">
-          <td width='40%'><b>{{name}}</b></td>
-          {{{toString times}}}
+        {{{activity this}}}
       {{/each}}
       </table>
     {{else}}
@@ -168,10 +167,21 @@
   </div>
 </script>
 
+<script id="activity-single-template" type="text/x-handlebars-template">
+  <tr width="100%" style="vertical-align:text-top">
+    <td width="40%" class="{{class}}">
+      <b>{{name}}</b>
+    </td>
+    <td width="35%" class="{{class}}">
+      {{day}}
+    </td>
+    <td class="{{class}}">
+      {{times}}
+    </td>
+  </tr>
+</script>
+
 <script type="text/javascript">
-  var button_tab_out = "<%= image_path 'button_tab_out.png' %>";
-  var button_tab_in  = "<%= image_path 'button_tab_in.png' %>";
   var rinks = <%=@Rinks.html_safe %>;
-  var path = '<%=rinks_url %>';
-  var green_url = '<%=asset_path "green.png" %>';
+  var rink_path = '<%=rinks_url %>';
 </script>
