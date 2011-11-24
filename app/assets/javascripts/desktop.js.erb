@@ -267,16 +267,16 @@ var App = {
         navigator.geolocation.getCurrentPosition(function(pos) {
           App.centerToLocation(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
         }, function(error) { console.log(error); });
-      } else if ($("#info_bubble").length == 0) { // Display a helpful info bubble
-        var template = Handlebars.compile($("#info-bubble-template").html());
-        $("body").append(template());
-        $(".tap-closeable").bind('click', function() { $("#info_bubble").remove(); $(".tap-closeable").unbind(); });
       }
+      // Display a helpful info bubble
+      var template = Handlebars.compile($("#info-bubble-template").html());
+      $("body").append(template());
+      $(".close").bind('click', function(){ $("#bubble_container").remove(); });
 
       App.togglePanel();
     });
 
-    App.simpleClick([{'id': '#add_rink', 'tmpl': '#add-rink-template'}, {'id': '#mobile', 'tmpl': '#mobile-template'}, {'id': '#home_link', 'tmpl': '#home-template'}]);
+    App.simpleClick([{'id': '#add_rink', 'tmpl': '#add-rink-template'}, {'id': '#mobile', 'tmpl': '#mobile-template'}, {'id': '#home_link', 'tmpl': '#home-template'}, {'id': '#logo', 'tmpl': '#home-template'}]);
   },
 
   /**

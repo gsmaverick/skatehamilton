@@ -141,9 +141,20 @@ input, button {
   background: rgba(0,0,0,0.3);
 }
 
+.up_triangle {
+  background-image: url(<%= asset_path 'triangles.png' %>);
+  background-repeat: no-repeat;
+  background-position: 0px -10px; height: 9px; width: 16px;
+  position: absolute;
+  margin-left: -8px;
+  top: 50px;
+  left: 50%;
+  z-index: 20;
+}
+
 #info_bubble {
   position: absolute;
-  top: 65px;
+  top: 58px;
   left: 50%;
 
   width: 240px;
@@ -153,9 +164,7 @@ input, button {
   z-index: 10;
   background: white;
 
-  border: 1px solid #BBB;
-  border-right: 1px solid #999;
-  border-bottom: 1px solid #999;
+  border: 1px solid #999;
 
   -moz-box-shadow: 3px 3px 4px #777;
   -webkit-box-shadow: 3px 3px 4px #777;
@@ -179,6 +188,23 @@ input, button {
     padding-top: 5px;
     padding-bottom: 5px;
     font-size: 0.9em;
+  }
+
+  .close {
+    position: absolute;
+    right: 11px;
+    top: 11px;
+    cursor: pointer;
+    color: white;
+    font-size: 1.2em;
+    padding: 3px;
+
+    .image {
+      background-image: url(<%= asset_path 'gmail.png' %>);
+      background-position: -40px -100px;
+      height: 16px;
+      width: 16px;
+    }
   }
 }
 

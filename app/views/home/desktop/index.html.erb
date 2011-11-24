@@ -23,7 +23,7 @@
       <li>
         <%= image_tag "explain_1.gif", :alt => "Find a Rink", :size => "120x90" %>
         <h2><%= link_to "Find a Rink", "#", :id => "find_rink" %></h2>
-        <h3>Find a public outdoor rink in Hamilton by entering your address or browsing on the map to the right.</h3>
+        <h3>Find a public rink in Hamilton by entering your address or browsing on the map to the right.</h3>
         <div class="clearfix"></div>
       </li>
       <li>
@@ -155,14 +155,17 @@
 </script>
 
 <script id="info-bubble-template" type="text/x-handlebars-template">
-  <div id="info_bubble" class="tap-closeable">
-    <h3>start searching.</h3>
-    <%= image_tag "close.gif", :alt => "Close" %>
-    <div class="clearfix"></div>
-    <div id="words">
-      Find skating rinks nearby by entering a street address in the box above.
+  <div id="bubble_container">
+    <div class="up_triangle"></div>
+    <div id="info_bubble" class="tap-closeable">
+      <h3>start searching.</h3>
+      <div class="close">Close<div class="image"></div><div class="clearfix"></div></div>
+      <div class="clearfix"></div>
+      <div id="words">
+        Find skating rinks nearby by entering a street address in the box above.  Click the map markers to get more information.
+      </div>
     </div>
-</div>
+  </div>
 </script>
 
 <script type="text/javascript">
