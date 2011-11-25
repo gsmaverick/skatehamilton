@@ -162,43 +162,47 @@ var App = {
     });
 
     Handlebars.registerHelper('activity', function(activity) {
-      if (activity.times.length == 1) {
-        var dayString = '';
+      var formatDate = function(start, end) {
+        // Cache some parts of the dates
+        var startHour    = parseInt(start.slice(0,2), 10);
+        var startMinutes = parseInt(start.slice(3,5), 10);
+        var endHour      = parseInt(end.slice(0,2), 10);
+        var endMinutes   = parseInt(end.slice(3,5), 10);
+
+        startMinutes = (startMinutes == 0) ? '' : ':' + startMinutes;
+        endMinutes   = (endMinutes == 0)   ? '' : ':' + endMinutes;
+
+        if (startHour > 12)
+          startHour = '' + (startHour - 12);
+
+        if (endHour >= 12)
+          endHour = ((endHour > 12) ? (endHour - 12) : endHour) + endMinutes + 'pm';
+        else if (endHour < 12)
+          endHour += endMinutes + 'am';
+
+        return startHour + startMinutes + '-' + endHour;
+      };
+
+      var s = '', dayString = '';
+      var template = Handlebars.compile($("#activity-single-template").html());
+
+      for(var i = 0, m = activity.times.length; i < m; i++) {
+        dayString = '';
 
         // Extracting out the days the activity time takes place
-        for(var j = 0, m = activity.times[0].days.length; j < m; j++)
-          if (activity.times[0].days[j] == '1')
+        for(var j = 0, n = activity.times[i].days.length; j < n; j++)
+          if (activity.times[i].days[j] == '1')
             dayString += self.days[j] + ', ';
-
-        var template = Handlebars.compile($("#activity-single-template").html());
-        return template({
-          'name': activity['name'],
+        
+        s += template({
+          'name': (i > 0) ? '' : activity['name'],
           'day': dayString.slice(0, -2),
-          'times': activity.times[0].start_time + '-' + activity.times[0].end_time,
-          'class': 'last'
+          'times': formatDate(activity.times[i].start_time, activity.times[i].end_time),
+          'class': (i + 1 == m) ? 'last' : ''
         });
-      } else {
-        var s = '', dayString = '';
-        var template = Handlebars.compile($("#activity-single-template").html());
-
-        for(var i = 0, m = activity.times.length; i < m; i++) {
-          dayString = '';
-
-          // Extracting out the days the activity time takes place
-          for(var j = 0, n = activity.times[i].days.length; j < n; j++)
-            if (activity.times[i].days[j] == '1')
-              dayString += self.days[j] + ', ';
-          
-          s += template({
-            'name': (i > 0) ? '' : activity['name'],
-            'day': dayString.slice(0, -2),
-            'times': activity.times[i].start_time + '-' + activity.times[i].end_time,
-            'class': (i + 1 == m) ? 'last' : ''
-          });
-        }
-
-        return s;
       }
+
+      return s;
     });
   },
 
