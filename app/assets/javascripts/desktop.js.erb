@@ -198,7 +198,8 @@ var App = {
           'name': (i > 0) ? '' : activity['name'],
           'day': dayString.slice(0, -2),
           'times': formatDate(activity.times[i].start_time, activity.times[i].end_time),
-          'class': (i + 1 == m) ? 'last' : ''
+          'class': (i + 1 == m) ? 'last' : '',
+          'rows': (i == 0) ? m : null
         });
       }
 

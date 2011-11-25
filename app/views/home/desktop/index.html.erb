@@ -147,8 +147,11 @@
     {{else}}
       <p>No scheduled public activities.</p>
     {{/if}}
-    <h3>Notes</h3>
-    <p>{{note}}</p>
+
+    {{#if note}}
+      <h3>Notes</h3>
+      <p>{{note}}</p>
+    {{/if}}
   </div>
   {{> footer}}
 </script>
@@ -169,9 +172,11 @@
 
 <script id="activity-single-template" type="text/x-handlebars-template">
   <tr width="100%" style="vertical-align:text-top">
-    <td width="40%" class="{{class}}">
-      <b>{{name}}</b>
-    </td>
+    {{#if rows}}
+      <th width="40%" class="{{class}}" rowspan="{{rows}}">
+        <b>{{name}}</b>
+      </th>
+    {{/if}}
     <td width="35%" class="{{class}}">
       {{day}}
     </td>
