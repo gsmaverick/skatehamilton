@@ -4,7 +4,7 @@ class HomeController < ApplicationController
   def index
     @Rinks = Rink.all(:select => 'id, address, latitude, longitude, name, rink_type').to_json
 
-    if isMobile
+    if isMobile or params[:mobile]
       render "home/mobile/index", :layout => "mobile"
     else
       render "home/desktop/index", :layout => "desktop"

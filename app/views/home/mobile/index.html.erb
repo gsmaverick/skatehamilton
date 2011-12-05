@@ -1,5 +1,6 @@
 <div id="header">
   <h1>SkateHamilton</h1>
+  <a href="#" id="search"><%= image_tag "search.png", :alt => "Search", :size => "24x24" %></a>
 </div>
 
 <div id="bubble_container">
@@ -15,6 +16,13 @@
 <div id="cover"></div>
 
 <div id="map"></div>
+
+<div style="display:none;">
+<%= image_tag 'arrow_right.png' %>
+<%= image_tag 'arrow_left.png' %>
+<%= image_tag 'direction.png' %>
+<%= image_tag 'info.png' %>
+</div>
 
 <script type="text/javascript">
   var rinks = <%= @Rinks.html_safe %>;
@@ -33,7 +41,7 @@
 
 <script id="rink-details-template" type="text/x-handlbars-template">
   <div id="rink_details">
-    <h3 style="margin-top: 50px; text-align: center;"><b>Loading...</b></h3>
+    <h3 style="margin-top: 60px; text-align: center;"><b>Loading...</b></h3>
   </div>
 </script>
 
@@ -43,12 +51,39 @@
     <h2>{{name}}</h2>
     <h3>{{address}}&nbsp;&nbsp;<span class="type">({{rink_type}} Rink)</span></h3>
     <%= link_to image_tag('direction.png', :size => "18x18") + 'Directions', '#', :class => 'button' %>
-    <%= link_to image_tag('info.png', :size => "18x18") + 'More Info', '#', :class => 'button' %>
+    <%= link_to image_tag('info.png', :size => "18x18") + 'City Info', '#', :class => 'button' %>
 
-    <h4>Activites</h4>
-    <p>No scheduled public activities.</p>
-    <h4>Notes</h4>
-    <p>This park location may have an outdoor rink, depending on the availability of volunteer ice coordinators. Ice availability is also subject to weather conditions. Hockey equipment is not permitted on the ice.</p>
+    <h4>Activities</h4>
+    {{#if activities.length}}
+      <table border='0' class='activities' cellspacing='0' style='width:100%;'>
+      {{#each activities}}
+        {{{activity this}}}
+      {{/each}}
+      </table>
+    {{else}}
+      <p>No scheduled public activities.</p>
+    {{/if}}
+
+    {{#if note}}
+      <h4>Notes</h4>
+      <p>{{note}}</p>
+    {{/if}}
   {{/with}}
   </div>
+</script>
+
+<script id="activity-single-template" type="text/x-handlebars-template">
+  <tr width="100%" style="vertical-align:text-top">
+    {{#if rows}}
+      <th width="35%" class="{{class}}" rowspan="{{rows}}">
+        <b>{{name}}</b>
+      </th>
+    {{/if}}
+    <td width="35%" class="{{class}}">
+      {{day}}
+    </td>
+    <td class="{{class}} end">
+      {{times}}
+    </td>
+  </tr>
 </script>

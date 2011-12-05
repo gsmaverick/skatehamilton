@@ -362,7 +362,6 @@ var App = {
 
     $.getJSON(rink_path + '/' + id, function(data) {
       var template = Handlebars.compile($("#rink-details-template").html());
-      data.activitiesLen = [];
       $("#contents").html(template(data));
 
       self.togglePanel(true);

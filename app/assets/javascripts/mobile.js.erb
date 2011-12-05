@@ -12,6 +12,13 @@
 
 var App = {
   /**
+   * Textual abbreviations of days of the week.
+   * @type {array}
+   *
+   */
+  days: ['Mon','Tues','Wed','Thurs','Fri','Sat','Sun'],
+
+  /**
    * Map marker that shows the current location on which the map
    * is centered.
    * @type {google.maps.marker}
@@ -51,9 +58,11 @@ var App = {
    *
    */
   closeInfo: function() {
-    $("#info_bubble").remove();
+    $("#bubble_container").remove();
     $("#cover").remove();
   },
+
+  getViewport: function(){var w=h=o=0,a='undefined',b=document.getElementsByTagName('body')[0],c=document.documentElement,d=window.innerWidth;if(typeof d!=a)w=d,h=window.innerHeight;else if(typeof c!=a&&typeof c.clientWidth!=a&&c.clientWidth!=0)w=c.clientWidth,h=c.clientHeight,o=c.scrollTop;else w=b.clientWidth,h=b.clientHeight,o=b.scrollTop;return[w,h,o];},
 
   init: function() {
     // People will see the pop-up every time so as to give us
@@ -67,24 +76,77 @@ var App = {
     $("#rink_popup").live('click', function() {
       $.getJSON(rinkPath + '/' + $("#rink_popup").attr("rink-id"), function(data) {
         var template = Handlebars.compile($("#rink-detail-template").html());
+        data.rink_type = data.rink_type.charAt(0).toUpperCase() + data.rink_type.slice(1);
         $("#rink_details").html(template({ rink: data }));
       });
 
       var template = Handlebars.compile($("#rink-details-template").html());
-      $("body").append(template({}));
+      $("body").append(template());
 
       $("#rink_popup").remove();
-      $("#header").append('<a href="#" id="back">&laquo;</a>');
+      $("#header").append('<a href="#" id="back"><%= image_tag "arrow_left.png", :alt => "Back", :size => "44x44" %></a>');
       $("#map").hide();
     });
 
     // Action fired when you click on the back button
     $("#back").live('click', function(e) {
       $("#map").show();
-      $("#back").remove();
       $("#rink_details").remove();
+      $("#back").remove();
+      window.scrollTo(0,1);
+      google.maps.event.trigger(App.map, 'resize');
       e.preventDefault();
     });
+
+    Handlebars.registerHelper('activity', function(activity) {
+      var formatDate = function(start, end) {
+        // Cache some parts of the dates
+        var startHour    = parseInt(start.slice(0,2), 10);
+        var startMinutes = parseInt(start.slice(3,5), 10);
+        var endHour      = parseInt(end.slice(0,2), 10);
+        var endMinutes   = parseInt(end.slice(3,5), 10);
+
+        startMinutes = (startMinutes == 0) ? '' : ':' + startMinutes;
+        endMinutes   = (endMinutes == 0)   ? '' : ':' + endMinutes;
+
+        if (startHour > 12)
+          startHour = '' + (startHour - 12);
+
+        if (endHour >= 12)
+          endHour = ((endHour > 12) ? (endHour - 12) : endHour) + endMinutes + 'pm';
+        else if (endHour < 12)
+          endHour += endMinutes + 'am';
+
+        return startHour + startMinutes + '-' + endHour;
+      };
+
+      var s = '', dayString = '';
+      var template = Handlebars.compile($("#activity-single-template").html());
+
+      for(var i = 0, m = activity.times.length; i < m; i++) {
+        dayString = '';
+
+        // Extracting out the days the activity time takes place
+        for(var j = 0, n = activity.times[i].days.length; j < n; j++)
+          if (activity.times[i].days[j] == '1')
+            dayString += App.days[j] + ', ';
+        
+        s += template({
+          'name': (i > 0) ? '' : activity['name'],
+          'day': dayString.slice(0, -2),
+          'times': formatDate(activity.times[i].start_time, activity.times[i].end_time),
+          'class': (i + 1 == m) ? 'last' : '',
+          'rows': (i == 0) ? m : null
+        });
+      }
+
+      return s;
+    });
+
+    $("html").css("height", (App.getViewport()[1] + 0) + "px");
+    //$("body").css("height", (App.getViewport()[1] + 44) + "px");
+    window.scrollTo(0,1);
+
   },
 
   /**
@@ -166,7 +228,9 @@ var App = {
     $.cookie('last_lat', App.mapCenter.lat());
     $.cookie('last_lng', App.mapCenter.lng());
 
-    this.locationMarker = null;
+    // Remove existing marker from the map
+    if (this.locationMarker)
+      this.locationMarker.setMap(null);
 
     // Center on current location
     this.locationMarker = new google.maps.Marker({
@@ -175,6 +239,9 @@ var App = {
       icon: this.locationMarkerIcon,
       title: "Current Location"
     });
+
+    this.map.setCenter(this.mapCenter);
+    this.map.setZoom(14); // TODO: fix zoom levels based on screen size
   },
 };
 
