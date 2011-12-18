@@ -1,5 +1,5 @@
 //= require zepto
-//= require handlebars
+//= require common
 
 // Copyright 2011 OpenHamilton.  All Rights Reserved.
 
@@ -30,7 +30,10 @@ var App = {
    * URL for the location marker icon used.
    * @type {string}
    */
-  locationMarkerIcon: '<%= asset_path "green.png" %>',
+
+  indoorMarker: '<%= asset_path "indoor.png" %>',
+  outdoorMarker: '<%= asset_path "outdoor.png" %>',
+  markerShadow: '<%= asset_path "marker-shadow.png" %>',
 
   /**
    * Google Map map object that ties to the main map canvas.
@@ -53,6 +56,8 @@ var App = {
    */
   rinkMarkers: [],
 
+  inputActive: false,
+
   /**
    * Closes the info bubble shown at load to the visitor.
    *
@@ -61,8 +66,6 @@ var App = {
     $("#bubble_container").remove();
     $("#cover").remove();
   },
-
-  getViewport: function(){var w=h=o=0,a='undefined',b=document.getElementsByTagName('body')[0],c=document.documentElement,d=window.innerWidth;if(typeof d!=a)w=d,h=window.innerHeight;else if(typeof c!=a&&typeof c.clientWidth!=a&&c.clientWidth!=0)w=c.clientWidth,h=c.clientHeight,o=c.scrollTop;else w=b.clientWidth,h=b.clientHeight,o=b.scrollTop;return[w,h,o];},
 
   init: function() {
     // People will see the pop-up every time so as to give us
@@ -84,7 +87,7 @@ var App = {
       $("body").append(template());
 
       $("#rink_popup").remove();
-      $("#header").append('<a href="#" id="back"><%= image_tag "arrow_left.png", :alt => "Back", :size => "44x44" %></a>');
+      $("#header").append('<a href="#" class="button" id="back"><%= image_tag "arrow_left1.png", :alt => "Back", :size => "18x18" %></a>');
       $("#map").hide();
     });
 
@@ -92,10 +95,30 @@ var App = {
     $("#back").live('click', function(e) {
       $("#map").show();
       $("#rink_details").remove();
+      $("#search_container").remove();
       $("#back").remove();
       window.scrollTo(0,1);
       google.maps.event.trigger(App.map, 'resize');
       e.preventDefault();
+    });
+
+    $("#search").live('click', function(e) {
+      /*$('#search_box').toggle();
+      window.scrollTo(0,1);*/
+      var template = Handlebars.compile($("#search-template").html());
+      $("body").append(template());
+      $("#map").hide();
+      $("#header").append('<a href="#" class="button" id="back"><%= image_tag "arrow_left1.png", :alt => "Back", :size => "18x18" %></a>');
+      e.preventDefault();
+    });
+
+    $("#query").live('focus', function(e) {
+      alert('focus');
+      App.inputActive = true;
+    });
+
+    $("#query").live('blur', function(e) {
+      App.inputActive = false;
     });
 
     Handlebars.registerHelper('activity', function(activity) {
@@ -142,11 +165,8 @@ var App = {
 
       return s;
     });
-
-    $("html").css("height", (App.getViewport()[1] + 0) + "px");
-    //$("body").css("height", (App.getViewport()[1] + 44) + "px");
+    
     window.scrollTo(0,1);
-
   },
 
   /**
@@ -163,7 +183,7 @@ var App = {
       });
 
     var mapOpts = {
-      zoom: 13,
+      zoom: 14,
       center: App.mapCenter,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
       streetViewControl: false,
@@ -179,7 +199,9 @@ var App = {
           position: new google.maps.LatLng(rinks[i].latitude, rinks[i].longitude),
           map: App.map,
           title: rinks[i].name,
-          info: [rinks[i].id, rinks[i].name, rinks[i].address, rinks[i].rink_type].join('|')
+          info: [rinks[i].id, rinks[i].name, rinks[i].address, rinks[i].rink_type].join('|'),
+          icon: new google.maps.MarkerImage(((rinks[i].rink_type == 'indoor') ? App.indoorMarker : App.outdoorMarker), new google.maps.Size(22, 31), new google.maps.Point(0,0), new google.maps.Point(0,31)),
+          shadow: new google.maps.MarkerImage(App.markerShadow, new google.maps.Size(42,31), new google.maps.Point(0,0), new google.maps.Point(0,30))
         });
 
         google.maps.event.addListener(App.rinkMarkers[i], 'click', function(e) {
@@ -198,7 +220,10 @@ var App = {
    *
    */
   mapTouch: function() {
+    $('#query').trigger('blur');
+    $('#search_box').hide();
     $("#rink_popup").hide();
+    window.scrollTo(0,1);
     $("#map").unbind('touchstart', App.mapTouch);
   },
 
@@ -236,7 +261,6 @@ var App = {
     this.locationMarker = new google.maps.Marker({
       position: this.mapCenter,
       map: this.map,
-      icon: this.locationMarkerIcon,
       title: "Current Location"
     });
 
@@ -248,3 +272,14 @@ var App = {
 // Fire off the app
 google.maps.event.addDomListener(window, 'load', App.initializeMap);
 $(document).ready(App.init);
+window.onorientationchange = function() {
+  window.scrollTo(0,1);
+  google.maps.event.trigger(App.map, 'resize');
+};
+
+window.onresize = function() {
+  if (App.inputActive) {
+    window.scrollTo(0,1);
+    alert('onresize');
+  }
+}

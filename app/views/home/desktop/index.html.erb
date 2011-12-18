@@ -1,12 +1,19 @@
 <!-- Page header containing address search form -->
 <div id="header">
-  <%= image_tag "logo.png", :size => "32x32", :id => "logo", :alt => "Logo" %>
+  <a href='<%= root_url %>'>
+    <%= image_tag 'logo.png', 
+                  :size => '32x32', 
+                  :id => 'logo', 
+                  :alt => 'Logo' %>
+  </a>
   <h1>SkateHamilton</h1>
   
   <div id="input_container">
     <h3>FIND A RINK</h3>
-    <input type="text" name="address" id="search_address" value="Address..." />
-    <%= link_to image_tag("search.png", :size => "32x32", :id => "search_submit", :alt => "Search"), "#" %>
+    <form style='display:inline'>
+      <input type="text" name="address" id="search_address" value="Address..." />
+      <%= link_to image_tag("search.png", :size => "32x32", :id => "search_submit", :alt => "Search"), "#" %>
+    </form>
   </div>
 
   <div class="clearfix"></div>
@@ -16,29 +23,31 @@
 <!-- Left-side content window -->
 <div id="left_panel">
   <div id="contents">
-    <h1>welcome.</h1>
-    <h3>Find a place to skate, play hockey and enjoy the outdoors.</h3>
-    <br/>
-    <ul id="tasks">
-      <li>
-        <%= image_tag "explain_1.gif", :alt => "Find a Rink", :size => "120x90" %>
-        <h2><%= link_to "Find a Rink", "#", :id => "find_rink" %></h2>
-        <h3>Find a public rink in Hamilton by entering your address or browsing on the map to the right.</h3>
-        <div class="clearfix"></div>
-      </li>
-      <li>
-        <%= image_tag "explain_2.gif", :alt => "Add a Rink", :size => "120x90" %>
-        <h2><%= link_to "Add a Rink", "#", :id => "add_rink" %></h2>
-        <h3>Did we miss a rink?  Help us out by letting us know there's some more ice we're missing.</h3>
-        <div class="clearfix"></div>
-      </li>
-      <li>
-        <%= image_tag "explain_3.gif", :alt => "Go Mobile", :size => "120x90" %>
-        <h2><%= link_to "Go Mobile", "#", :id => "mobile" %></h2>
-        <h3>Our mobile web-app works on all Android and iOS devices.  Find a rink nearby, update rink conditions and more on the go.</h3>
-        <div class="clearfix"></div>
-      </li>
-    </ul>
+    <div id='left_content'>
+      <h1>welcome.</h1>
+      <h3>Find a place to skate, play hockey and enjoy the outdoors.</h3>
+      <br/>
+      <ul id="tasks">
+        <li>
+          <%= image_tag "find.png", :alt => "Find a Rink", :size => "120x90" %>
+          <h2><%= link_to "Find a Rink", "#", :id => "find_rink" %></h2>
+          <h3>Find a public rink in Hamilton by entering your address or browsing on the map to the right.</h3>
+          <div class="clearfix"></div>
+        </li>
+        <li>
+          <%= image_tag "add.png", :alt => "Add a Rink", :size => "120x90" %>
+          <h2><%= link_to "Add a Rink", "#", :id => "add_rink" %></h2>
+          <h3>Did we miss a rink?  Help us out by letting us know there's some more ice we're missing.</h3>
+          <div class="clearfix"></div>
+        </li>
+        <li>
+          <%= image_tag "explain_3.gif", :alt => "Go Mobile", :size => "120x90" %>
+          <h2><%= link_to "Go Mobile", "#", :id => "mobile" %></h2>
+          <h3>Our mobile web-app works on all Android and iOS devices.  Find a rink nearby, update rink conditions and more on the go.</h3>
+          <div class="clearfix"></div>
+        </li>
+      </ul>
+    </div>
 
     <div id="footer">
       <%= link_to "home", "#", :id => "home_link" %>&nbsp;|&nbsp;<%= link_to "about", about_url %>&nbsp;|&nbsp;<%= link_to "contact", contact_url %>&nbsp;|&nbsp;<%= link_to "developers", api_url %>&nbsp;|&nbsp;<%= link_to "openhamilton", "http://openhamilton.ca" %>
@@ -48,8 +57,14 @@
 
 <!-- Open/close leftbar -->
 <div id="left_panel_control">
-  <%= image_tag "button_tab_out.png", :alt => "Toggle panel", :id => "button_out" %>
-  <%= image_tag "button_tab_in.png", :alt => "Toggle panel", :id => "button_in", :style => "display:none" %>
+  <%= image_tag 'button_tab_out.png', 
+                :alt => 'Toggle panel', 
+                :id => 'button_out' %>
+
+  <%= image_tag 'button_tab_in.png', 
+                :alt => 'Toggle panel',
+                :id => 'button_in', 
+                :style => 'display: none' %>
 </div>
 
 
@@ -58,25 +73,19 @@
   <div id="map"></div>
 </div>
 
-<script id="footer-template" type="text/x-handlebars-template">
-  <div id="footer">
-    <%= link_to "home", "#", :id => "home_link" %>&nbsp;|&nbsp;<%= link_to "about", about_url %>&nbsp;|&nbsp;<%= link_to "contact", contact_url %>&nbsp;|&nbsp;<%= link_to "developers", api_url %>&nbsp;|&nbsp;<%= link_to "openhamilton", "http://openhamilton.ca" %>
-  </div>
-</script>
-
 <script id="home-template" type="text/x-handlebars-template">
   <h1>welcome.</h1>
   <h3>Find a place to skate, play hockey and enjoy the outdoors.</h3>
   <br/>
   <ul id="tasks">
     <li>
-      <%= image_tag "explain_1.gif", :alt => "Find a Rink", :size => "120x90" %>
+      <%= image_tag "find.png", :alt => "Find a Rink", :size => "120x90" %>
       <h2><%= link_to "Find a Rink", "#", :id => "find_rink" %></h2>
       <h3>Find a public outdoor rink in Hamilton by entering your address or browsing on the map to the right.</h3>
       <div class="clearfix"></div>
     </li>
     <li>
-      <%= image_tag "explain_2.gif", :alt => "Add a Rink", :size => "120x90" %>
+      <%= image_tag "add.png", :alt => "Add a Rink", :size => "120x90" %>
       <h2><%= link_to "Add a Rink", "#", :id => "add_rink" %></h2>
       <h3>Did we miss a rink?  Help us out by letting us know there's some more ice we're missing.</h3>
       <div class="clearfix"></div>
@@ -88,8 +97,6 @@
       <div class="clearfix"></div>
     </li>
   </ul>
-
-  {{> footer}}
 </script>
 
 <script id="mobile-template" type="text/x-handlebars-template">
@@ -110,8 +117,6 @@
       <div class="clearfix"></div>
     </li>
   </ul>
-
-  {{> footer}}
 </script>
 
 <script id="add-rink-template" type="text/x-handlebars-template">
@@ -126,34 +131,6 @@
 
     <input type="submit" name="submit" value="Submit" />
   </form>
-
-  {{> footer}}
-</script>
-
-<script id="rink-details-template" type="text/x-handlebars-template">
-  <div class="rink_details">
-    <h2>{{name}}</h2>
-    <h4>{{address}}&nbsp;&nbsp;<span class="type">({{capRink rink_type}} Rink)</span></h4>
-    <h3>Map</h3>
-    <a href="http://maps.google.com/maps?daddr={{latitude}},{{longitude}}" target="_blank">{{{staticMap this}}}</a>
-    <br/>
-    <h3>Activities</h3>
-    {{#if activities.length}}
-      <table border='0' class='activities' cellspacing='0' style='width:100%;'>
-      {{#each activities}}
-        {{{activity this}}}
-      {{/each}}
-      </table>
-    {{else}}
-      <p>No scheduled public activities.</p>
-    {{/if}}
-
-    {{#if note}}
-      <h3>Notes</h3>
-      <p>{{note}}</p>
-    {{/if}}
-  </div>
-  {{> footer}}
 </script>
 
 <script id="info-bubble-template" type="text/x-handlebars-template">
@@ -170,7 +147,48 @@
   </div>
 </script>
 
-<script id="activity-single-template" type="text/x-handlebars-template">
+<!-- SH.views.RinkView Template -->
+<script id="rink-view-template" type="text/x-handlebars-template">
+  <div class="rink_details">
+    <h2>{{name}}</h2>
+    <h4>{{address}}&nbsp;&nbsp;<span class="type">({{type}} Rink)</span></h4>
+    <ul class='action_buttons'>
+      <li class='btn'>
+        <button href='http://maps.google.com/maps?daddr={{lat}},{{lng}}' onclick=";window.location.href=this.getAttribute('href');return false;" class='start'>
+          <img src='/assets/direction.png' height='16' width='16' />Directions
+        </button>
+      </li>
+      <li class='btn'>
+        <button href='' onclick=";window.location.href=this.getAttribute('href');return false;">
+          <img src='/assets/info.png' height='16' width='16' />City Info
+        </button>
+      </li>
+      <li class='btn'>
+        <button href='' onclick=";window.location.href=this.getAttribute('href');return false;" class='last'>
+          <img src='/assets/info.png' height='16' width='16' />Share
+        </button>
+      </li>
+    </ul>
+    <h3>Map</h3>
+    <img src="http://maps.googleapis.com/maps/api/staticmap?center={{lat}},{{lng}}&amp;zoom=15&amp;size=353x240&amp;maptype=roadmap&amp;sensor=false&amp;markers=color:red%7C{{lat}},{{lng}}" class="map">
+    <br/>
+    <h3>Activities</h3>
+    {{#if hasActivities}}
+      <table border='0' class='activities' cellspacing='0' style='width:100%;' id='activities'>
+      </table>
+    {{else}}
+      <p>No scheduled public activities.</p>
+    {{/if}}
+
+    {{#if note}}
+      <h3>Notes</h3>
+      <p>{{note}}</p>
+    {{/if}}
+  </div>
+</script>
+
+<!-- SH.views.ActivityView -->
+<script id='activity-view-template' type='text/x-handlebars-template'>
   <tr width="100%" style="vertical-align:text-top">
     {{#if rows}}
       <th width="40%" class="{{class}}" rowspan="{{rows}}">
@@ -186,7 +204,7 @@
   </tr>
 </script>
 
+
 <script type="text/javascript">
   var rinks = <%=@Rinks.html_safe %>;
-  var rink_path = '<%=rinks_url %>';
 </script>

@@ -1,371 +1,60 @@
 //= require jquery
-//= require handlebars
+//= require common
 
-// Copyright 2011 OpenHamilton.  All Rights Reserved.
+SH.views.HeaderView = Backbone.View.extend({
+  el: '#header',
 
-/**
- * @fileoverview Main javascript file served to desktop users.
- * @author gavin.schulz@gmail.com (Gavin Schulz)
- *
- */
-
-var App = {
-  /**
-   * A series of cached jQuery selectors that get used a lot.
-   */
-  $content: null, $left_panel: null, $map: null, $control_img: null,
-  $search_submit: null, $button_out: null, $button_in: null,
-
-  /**
-   * Textual abbreviations of days of the week.
-   * @type {array}
-   *
-   */
-  days: ['Mon','Tues','Wed','Thurs','Fri','Sat','Sun'],
-
-  /**
-   * Map marker that shows the current location on which the map
-   * is centered.
-   * @type {google.maps.marker}
-   *
-   */
-  locationMarker: null,
-
-  /**
-   * URL for the location marker icon used.
-   * @type {string}
-   *
-   */
-  locationMarkerIcon: '<%= asset_path "green.png" %>',
-
-  /**
-   * Google Map map object that ties to the main map canvas.
-   * @type {google.maps.map}
-   *
-   */
-  map: null,
-
-  /**
-   * Coordinates on which the map is currently centered.
-   * @type {google.maps.LatLng}
-   *
-   */
-  mapCenter: new google.maps.LatLng(43.24895389686911, -79.86236572265625),
-
-  /**
-   * Object containing google maps options.
-   * @type {object}
-   *
-   */
-  mapOptions: {
-    zoom: 13,
-    mapTypeId: google.maps.MapTypeId.ROADMAP,
-    streetViewControl: false
+  events: {
+    'submit form': 'submitForm',
+    'click #search_submit': 'submitForm',
+    'focus #search_address': 'focus',
+    'blur #search_address': 'blur'
   },
 
-  /**
-   * All the map markers on the map that represent rinks.
-   * @type {array}
-   *
-   */
-  rinkMarkers: [],
-
-  /**
-   * Default contents of the header search input field.
-   * @type {string}
-   *
-   */
-  textFill: 'Address...',
-
-  /**
-   * Minified function to get size of browser viewport.
-   * @return {array} An array containing the height width and scrollTop of the browser.
-   *
-   */
-  getViewport: function(){var w=h=o=0,a='undefined',b=document.getElementsByTagName('body')[0],c=document.documentElement,d=window.innerWidth;if(typeof d!=a)w=d,h=window.innerHeight;else if(typeof c!=a&&typeof c.clientWidth!=a&&c.clientWidth!=0)w=c.clientWidth,h=c.clientHeight,o=c.scrollTop;else w=b.clientWidth,h=b.clientHeight,o=b.scrollTop;return[w,h,o];},
-
-  /**
-   * Centers the map to the new location specified and updates 
-   * the center location marker.
-   * @param {google.maps.LatLng} location New position to center map on.
-   *
-   */
-  centerToLocation: function(location) {
-    // Remove existing marker from the map
-    if (this.locationMarker)
-      this.locationMarker.setMap(null);
-    
-    this.mapCenter = location || this.mapCenter;
-    
-    this.map.setCenter(this.mapCenter);
-    this.map.setZoom(14); // TODO: fix zoom levels based on screen size
-    this.locationMarker = new google.maps.Marker({
-      animation: google.maps.Animation.DROP,
-      position: this.mapCenter,
-      map: this.map,
-      icon: this.locationMarkerIcon,
-      title: "Current Location"
-    });
-  },
-
-  /**
-   * Adjusts the height of all the elements when the screen 
-   * is resized so as to prevent scrollbars from appearing.
-   *
-   */
-  doLayout: function() {
-    var bodyHeight = this.getViewport()[1];
-    bodyHeight = (bodyHeight < 400) ? 400 : bodyHeight;
-
-    var contentHeight = (bodyHeight - 44);
-
-    // This might run before we've set up the selector caches
-    this.$map = this.$map || $('#map');
-    this.$left_panel = this.$left_panel || $('#left_panel');
-
-    this.$map.css('height', contentHeight + "px");    
-    this.$left_panel.css('height', contentHeight + "px");
-    $("#map_canvas").css('height', contentHeight + "px");
-  },
-
-  /**
-   * Sets up Handlebars.js helpers and partials that are
-   * used throughout the application.
-   *
-   */
-  hbInit: function() {
-    var self = this;
-
-    // Registers a footer partial for access in other templates
-    Handlebars.registerPartial('footer', Handlebars.compile($("#footer-template").html()));
-
-    /**
-     * Returns the html for showing a static google map
-     * @param {object} context The handlebars context that this helper is called from
-     * @return {string} The html need for showing the static map
-     *
-     */
-    Handlebars.registerHelper('staticMap', function(context) {
-      return '<img src="http://maps.googleapis.com/maps/api/staticmap?center=' + 
-           context.latitude + ',' + context.longitude + 
-           '&zoom=15&size=353x240&maptype=roadmap&sensor=false&markers=color:red%7C' +
-           context.latitude + ',' + context.longitude + '" class="map" />';
-    });
-
-    /**
-     * Capitalizes the first letter of the rink type.
-     * @param {string} rink_type Type of rink being displayed.
-     *
-     */
-    Handlebars.registerHelper('capRink', function(rink_type) {
-      return rink_type.charAt(0).toUpperCase() + rink_type.slice(1);
-    });
-
-    Handlebars.registerHelper('activity', function(activity) {
-      var formatDate = function(start, end) {
-        // Cache some parts of the dates
-        var startHour    = parseInt(start.slice(0,2), 10);
-        var startMinutes = parseInt(start.slice(3,5), 10);
-        var endHour      = parseInt(end.slice(0,2), 10);
-        var endMinutes   = parseInt(end.slice(3,5), 10);
-
-        startMinutes = (startMinutes == 0) ? '' : ':' + startMinutes;
-        endMinutes   = (endMinutes == 0)   ? '' : ':' + endMinutes;
-
-        if (startHour > 12)
-          startHour = '' + (startHour - 12);
-
-        if (endHour >= 12)
-          endHour = ((endHour > 12) ? (endHour - 12) : endHour) + endMinutes + 'pm';
-        else if (endHour < 12)
-          endHour += endMinutes + 'am';
-
-        return startHour + startMinutes + '-' + endHour;
-      };
-
-      var s = '', dayString = '';
-      var template = Handlebars.compile($("#activity-single-template").html());
-
-      for(var i = 0, m = activity.times.length; i < m; i++) {
-        dayString = '';
-
-        // Extracting out the days the activity time takes place
-        for(var j = 0, n = activity.times[i].days.length; j < n; j++)
-          if (activity.times[i].days[j] == '1')
-            dayString += self.days[j] + ', ';
-        
-        s += template({
-          'name': (i > 0) ? '' : activity['name'],
-          'day': dayString.slice(0, -2),
-          'times': formatDate(activity.times[i].start_time, activity.times[i].end_time),
-          'class': (i + 1 == m) ? 'last' : '',
-          'rows': (i == 0) ? m : null
-        });
+  submitForm: function(e) {
+    e.preventDefault();
+    SH.utils.geocoder.geocode(
+      {'address' : $('#search_address').val() + ' Hamilton, Ontario'}, 
+      function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          SH.app.centerToLocation(results[0].geometry.location);
+          $('#search_address').val(SH.app.search_text);
+        }
       }
-
-      return s;
-    });
+    );
   },
 
-  /**
-   * Initializes the application.
-   */
-  init: function() {
-    // Properly size all the elements
-    this.doLayout();
-
-    // Set up our helpers for Handlebars
-    this.hbInit();
-
-    // Cache some common selectors
-    this.$content       = $('#contents');
-    this.$left_panel    = $('#left_panel');
-    this.$map           = $('#map');
-    this.$control_img   = $('#left_panel_control img');
-    this.$search_submit = $('#search_submit');
-    this.$button_in     = $('#button_in');
-    this.$button_out    = $('#button_out');
-
-    // Make sure panel is displayed
-    this.togglePanel(true);
-   
-    this.registerEvents();
-  },
-
-  /**
-   * Attaches an array of IDs to automatically load a template on click.
-   * 
-   */
-  simpleClick: function(elems) {
+  focus: function(e) {
     var self = this;
+    if (e.target.value.trim() == SH.app.search_text)
+      e.target.value = "";
 
-    $.each(elems, function(key, value) {
-      var tmpl = value['tmpl'];
-      $(value['id']).live('click', function(e) {
-        self.loadTemplate(tmpl);
-        e.preventDefault();
-      });
-    });
-  },
-
-  registerEvents: function() {
-    // For reference back to the App object when we're in event closures
-    var self = this;
-
-    this.$control_img.live('click', function(){ self.togglePanel(); });
-
-    // Submit button/image handler
-    this.$search_submit.click(function(e) {
-      var geocoder = new google.maps.Geocoder();
-      geocoder.geocode({'address' : document.getElementById("search_address").value + ' Hamilton, Ontario'}, function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK)
-          App.centerToLocation(results[0].geometry.location);
-      });
-
-      e.preventDefault();
-    });
-
-    $("#search_address").focus(function(){
-      this.value = (this.value == self.textFill) ? this.value = "" : this.value;
-
-      // When clicking on the google map it does not receive focus so we
-      // have to simuate it
-      var mapFocus = google.maps.event.addListener(self.map, 'mousedown', function(){
-        $("#search_address").trigger('blur');
+    // When clicking on the google map it does not cause the search_address
+    // have to simulate it
+    var mapFocus = google.maps.event.addListener(SH.app.map, 'mousedown', 
+      function() {
+        $('#search_address').trigger('blur');
         google.maps.event.removeListener(mapFocus);
-      });
-    });
-
-    $("#search_address").blur(function(){
-      this.value = (this.value.trim() == '') ? this.value = self.textFill : this.value;
-    });
-
-    // Since we're not using an actual form atm
-    // we must fake the ``enter`` to submit functionality
-    $("#search_address").keydown(function(e) {
-      if (e.keyCode == '13') 
-        self.$search_submit.trigger("click");
-    });
-
-    $("#find_rink").live('click', function(e) {
-      e.preventDefault();
-
-      if (navigator.geolocation) { // Geolocate ourselves to the user's position
-        navigator.geolocation.getCurrentPosition(function(pos) {
-          self.centerToLocation(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
-        }, function(error) { console.log(error); });
       }
+    );
+  },
+  
+  blur: function(e) {
+    if (e.target.value.trim() == '')
+      e.target.value = SH.app.search_text;
+  }
+});
 
-      // Display a helpful info bubble
-      if ($("#info_bubble").length == 0) {
-        var template = Handlebars.compile($("#info-bubble-template").html());
-        $("body").append(template());
-        $(".close").bind('click', function(){
-          $("#bubble_container").remove();
-        });
-      }
+SH.views.LeftPanelControlView = Backbone.View.extend({
+  el: '#left_panel_control',
 
-      self.togglePanel();
-    });
-
-    this.simpleClick([{'id': '#add_rink', 'tmpl': '#add-rink-template'}, {'id': '#mobile', 'tmpl': '#mobile-template'}, {'id': '#home_link', 'tmpl': '#home-template'}, {'id': '#logo', 'tmpl': '#home-template'}]);
+  events: {
+    'click #button_in': 'togglePanel',
+    'click #button_out': 'togglePanel'
   },
 
-  /**
-   * Loads an info template into the left panel.
-   * @param {string} tmpl The id of the template to be loaded.
-   *
-   */
-  loadTemplate: function(tmpl) {
-    // Compile the template and load it up
-    var template = Handlebars.compile($(tmpl).html());
-    this.$content.html(template());
-
-    // Make sure the left panel is displayed
-    this.togglePanel(true);
-  },
-
-  /**
-   * Initializes the google map and adds the rink markers 
-   * to the map canvas.
-   *
-   */
-  initMap: function() {
-    var self = this;
-    
-    this.map = new google.maps.Map(document.getElementById('map'), this.mapOptions);
-    this.centerToLocation();
-
-    // Adds all the markers once the tiles have loaded
-    google.maps.event.addListener(this.map, 'tilesloaded', function(){
-      for (var i = 0; i < rinks.length; i++) {
-        self.rinkMarkers[i] = new google.maps.Marker({
-          position: new google.maps.LatLng(rinks[i].latitude, rinks[i].longitude),
-          map: self.map,
-          title: rinks[i].name,
-          id: rinks[i].id
-        });
-
-        google.maps.event.addListener(self.rinkMarkers[i], 'click', function(){ App.showInfo(this.id); });
-      }
-    });
-
-  },
-
-  /**
-   * Loads the rink information into the left panel.
-   * @param {number} id Rink which was clicked on the map.
-   *
-   */
-  showInfo: function(id) {
-    var self = this;
-
-    $.getJSON(rink_path + '/' + id, function(data) {
-      var template = Handlebars.compile($("#rink-details-template").html());
-      $("#contents").html(template(data));
-
-      self.togglePanel(true);
-    });
+  initialize: function() {
+    _.bindAll(this, 'togglePanel');
   },
 
   /**
@@ -374,28 +63,237 @@ var App = {
    *
    */
   togglePanel: function(show) {
-    if (this.$content.css("display") == "none" || show) {
-      this.$button_in.css('display', 'none');
-      this.$button_out.css('display', 'block');
-      this.$content.css("display", "block");
-      this.$left_panel.css("width", "400px");
-      this.$control_img.css("left", "404px");
-      this.$map.css("margin-left", "400px");
+    if ($('#contents').css('display') == 'none' || 
+        (typeof show === 'boolean' && show == true)) {
+      $('#button_in').css('display', 'none');
+      $('#button_out').css('display', 'block');
+      $('#contents').css('display', 'block');
+      $('#left_panel').css('width', '400px');
+      $('#button_out').css('left', '404px');
+      $('#button_in').css('left', '404px');
+      $('#map').css('margin-left', '400px');
     } else {
-      this.$content.css("display", "none");
-      this.$left_panel.css("width", "0px");
-      this.$control_img.css("left", "4px");
-      this.$button_out.css('display', 'none');
-      this.$button_in.css('display', 'block');
-      this.$map.css("margin-left", "0px");
+      $('#contents').css("display", "none");
+      $('#left_panel').css("width", "0px");
+      $('#button_out').css('display', 'none');
+      $('#button_in').css('display', 'block');
+      $('#button_out').css('left', '4px');
+      $('#button_in').css('left', '4px');
+      $('#map').css("margin-left", "0px");
     }
 
-    if (this.map)
-      google.maps.event.trigger(this.map, 'resize');
-  },
-};
+    if (SH.app.map)
+      google.maps.event.trigger(SH.app.map, 'resize');
+  }
+});
 
-// Register some handlers to start the app
-window.onresize = function(){App.doLayout()};
-google.maps.event.addDomListener(window, 'load', function(){App.initMap();});
-$(document).ready(function(){App.init();});
+SH.views.LeftPanelView = Backbone.View.extend({
+  el: '#left_panel',
+
+  events: {
+    'click #find_rink': 'find',
+    'click #add_rink': 'add',
+    'click #mobile': 'mobile',
+    'click #home_link': 'home'
+  },
+
+  home: function(e) {
+    console.log('home');
+    e.preventDefault();
+    var template = Handlebars.compile($('#home-template').html());
+    $('#left_content').html(template());
+  },
+
+  find: function(e) {
+    e.preventDefault();
+
+    if (navigator.geolocation) { // Geolocate ourselves to the user's position
+      navigator.geolocation.getCurrentPosition(function(pos) {
+        SH.app.centerToLocation(new google.maps.LatLng(pos.coords.latitude, 
+                                                       pos.coords.longitude));
+      }, function(error) {
+        console.log(error);
+      });
+    }
+
+    // Display a helpful info bubble
+    if ($('#info_bubble').length == 0) {
+      var template = Handlebars.compile($('#info-bubble-template').html());
+      $('body').append(template());
+      $('.close').bind('click', function() {
+        $('#bubble_container').remove();
+      });
+    }
+
+    SH.app.togglePanel();
+  },
+
+  add: function(e) {
+    e.preventDefault();
+    var template = Handlebars.compile($('#add-rink-template').html());
+    $('#left_content').html(template());
+  },
+
+  mobile: function(e) {
+    e.preventDefault();
+    var template = Handlebars.compile($('#mobile-template').html());
+    $('#left_content').html(template());
+  }
+
+});
+
+_.extend(SH.app, {
+  /**
+   * Map marker that shows the current location on which the map
+   * is centered.
+   * @type {google.maps.marker}
+   */
+  locationMarker: null,
+
+  /**
+   * Google Map map object that ties to the main map canvas.
+   * @type {google.maps.map}
+   */
+  map: null,
+
+  /**
+   * Object containing google maps options.
+   * @type {object}
+   */
+  mapOptions: {
+    zoom: 14,
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    streetViewControl: false
+  },
+
+  /**
+   * Default contents of the header search input field.
+   * @type {string}
+   */
+  search_text: 'Address...',
+
+  /**
+   * Utility function to get size of browser viewport.
+   * @return {array} An array containing the height, width and scrollTop of the browser.
+   */
+  getViewport: function() {
+    var w = h = o = 0,
+        a = 'undefined',
+        b = document.getElementsByTagName('body')[0],
+        c = document.documentElement,
+        d = window.innerWidth;
+    if (typeof d != a)
+      w = d, h = window.innerHeight;
+    else if (typeof c != a && typeof c.clientWidth != a && c.clientWidth != 0)
+      w = c.clientWidth, h = c.clientHeight, o = c.scrollTop;
+    else
+      w = b.clientWidth, h = b.clientHeight, o = b.scrollTop;
+    return [w, h, o];
+  },
+
+  /**
+   * Centers the map to the new location specified and updates 
+   * the center location marker.
+   * @param {google.maps.LatLng} location New position to center map on.
+   */
+  centerToLocation: function(location) {
+    // Remove existing marker from the map
+    if (SH.app.locationMarker)
+      SH.app.locationMarker.setMap(null);
+    
+    SH.app.map.setCenter(location || SH.consts.default_center);
+    SH.app.locationMarker = new google.maps.Marker({
+      animation: google.maps.Animation.DROP,
+      position: location || SH.consts.default_center,
+      map: SH.app.map,
+      title: 'Current Location'
+    });
+  },
+
+  /**
+   * Adjusts the height of all fixed height elements when the screen is resized 
+   * so as to prevent scrollbars from appearing.
+   */
+  doLayout: function() {
+    var bodyHeight = SH.app.getViewport()[1];
+    bodyHeight = (bodyHeight < 400) ? 400 : bodyHeight;
+
+    var contentHeight = (bodyHeight - 44);
+
+    $('#map').css('height', contentHeight + 'px');    
+    $('#left_panel').css('height', contentHeight + 'px');
+    $('#map_canvas').css('height', contentHeight + 'px');
+  },
+
+  addMarkers: function() {
+    SH.app.RinkMarkers = SH.app.RinksMarkers || [];
+
+    SH.app.Rinks.each(function(rink) {
+      var a = {
+        lat: rink.lat(),
+        lng: rink.lng(),
+        name: rink.name(),
+        id: rink.get('id'),
+        type: rink._type(),
+        cb: function(e) {
+          // Get the rest of the rink information from the server
+          rink.fetch({success: function() {
+            // Render a RinkView in the left panel
+            (new SH.views.RinkView({el: '#left_content', model: rink})).render();
+            SH.app.left_panel_control.togglePanel(true);
+          }, data: {deep: true}});
+        }
+      };
+
+      SH.app.RinkMarkers[rink.get('id')] = new SH.views.MapMarkerView(a);
+    });
+  },
+
+  // Initializes the google map and adds the rink markers to the map
+  initMap: function() {
+    SH.app.map = new google.maps.Map(document.getElementById('map'), SH.app.mapOptions);
+    SH.app.centerToLocation();
+    google.maps.event.addListener(SH.app.map, 'tilesloaded', SH.app.addMarkers);
+  }
+});
+
+SH.Router = Backbone.Router.extend({
+  routes: {
+    '': 'index',
+    '/rinks/:id': 'rink'
+  },
+
+  index: function() {
+    this.init();
+  },
+
+  rink: function(id) {
+    this.init();
+  },
+
+  /**
+   * Common initialization tasks that need to be done on every page load.  This
+   * sets up all the views and the map callbacks.
+   */
+  init: function() {
+    // Load rink data
+    SH.app.Rinks = new SH.collections.Rinks(window.rinks);
+
+    google.maps.event.addDomListener(window, 'load', SH.app.initMap);
+    window.onresize = SH.app.doLayout; // TODO: orientation change event
+
+    // Construct all our views and attach them to existing elements
+    SH.app.left_panel_control = new SH.views.LeftPanelControlView();
+    SH.app.left_panel = new SH.views.LeftPanelView();
+    SH.app.header = new SH.views.HeaderView();
+
+    SH.app.doLayout();
+    // Make sure panel is displayed
+    SH.app.left_panel_control.togglePanel(true);
+  },
+});
+
+$(document).ready(function() {
+  var Router = new SH.Router();
+  Backbone.history.start();
+});

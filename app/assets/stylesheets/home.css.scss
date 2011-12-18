@@ -282,7 +282,7 @@ body {
 }
 
 .up_triangle {
-  background-image: url(<%= asset_path 'triangles.png' %>);
+  background-image: url('/assets/triangles.png');
   background-repeat: no-repeat;
   background-position: 0px -10px; height: 9px; width: 16px;
   position: absolute;
@@ -342,7 +342,7 @@ body {
     padding: 3px;
 
     .image {
-      background-image: url(<%= asset_path 'gmail.png' %>);
+      background-image: url('/assets/gmail.png');
       background-position: -40px -100px;
       height: 16px;
       width: 16px;
@@ -358,5 +358,76 @@ body {
     .image {
       background-color: #EEE;
     }
+  }
+}
+
+.action_buttons {
+  display: block;
+  margin: 8px 0 0 0;
+  padding: 0;
+  list-style: none;
+
+  width: 353px;
+
+  li {
+    float: left;
+    width: 117px;
+
+    button {
+      width: 100%;
+      text-align: center;
+      text-decoration: none;
+      font-size: 1.4em;
+      color: #333;
+      font-weight: bold;
+      padding: 8px 0;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#F4F4F4', endColorstr='#C4C4C4');
+      background: -webkit-gradient(linear, left top, left bottom, from(#F4F4F4), to(#C4C4C4));
+      background: -moz-linear-gradient(top, #F4F4F4, #C4C4C4);
+
+      border-top: 1px solid #AAA;
+      border-right: none;
+      border-bottom: 1px solid #999;
+      border-left: 1px solid #999;
+
+      img {
+        padding-right: 3px;
+        vertical-align: text-top;
+      }
+
+      &.start {
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+      }
+
+      &.last {
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+        border-right: 1px solid #999;
+      }
+
+      &:hover {
+        color: #000;
+        cursor: pointer;
+      }
+
+      &:active {
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#E4E4E4', endColorstr='#B4B4B4');
+        background: -webkit-gradient(linear, left top, left bottom, from(#E4E4E4), to(#B4B4B4));
+        background: -moz-linear-gradient(top, #E4E4E4, #B4B4B4);
+      }
+    }
+
+    &:first-child, &:last-child {
+      width: 118px !important;
+    }
+  }
+
+  &:after {
+    clear: both;
+    content: "";
+    display: table;
   }
 }

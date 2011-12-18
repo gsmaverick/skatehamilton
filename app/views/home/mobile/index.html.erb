@@ -1,6 +1,6 @@
 <div id="header">
-  <h1>SkateHamilton</h1>
-  <a href="#" id="search"><%= image_tag "search.png", :alt => "Search", :size => "24x24" %></a>
+  <h1>Skate Hamilton</h1>
+  <a href="#" class='button' id="search"><%= image_tag "search.png", :alt => "Search", :size => "18x18" %></a>
 </div>
 
 <div id="bubble_container">
@@ -17,13 +17,6 @@
 
 <div id="map"></div>
 
-<div style="display:none;">
-<%= image_tag 'arrow_right.png' %>
-<%= image_tag 'arrow_left.png' %>
-<%= image_tag 'direction.png' %>
-<%= image_tag 'info.png' %>
-</div>
-
 <script type="text/javascript">
   var rinks = <%= @Rinks.html_safe %>;
   var rinkPath = '<%= rinks_path %>';
@@ -39,9 +32,29 @@
   </div>
 </script>
 
-<script id="rink-details-template" type="text/x-handlbars-template">
+<script id="rink-details-template" type="text/x-handlebars-template">
   <div id="rink_details">
     <h3 style="margin-top: 60px; text-align: center;"><b>Loading...</b></h3>
+  </div>
+</script>
+
+<script id='search-template' type='text/x-handlebars-template'>
+  <div id="search_container">
+    <div id='inside'>
+      <form id='search_form'>
+        <div class='input_holder'>
+          <input placeholder='Enter address or rink name' type='text' id='query' />
+        </div>
+      </form>
+
+      <div class='current'><%= image_tag 'rounded.png', :size => "16x16" %>Center map on my location</div>
+      <h3>Past Searches</h3>
+      <ul>
+        <li>1 Chatterson Dr.</li>
+        <li>1280 Main Street</li>
+        <li>Main at King</li>
+      </ul>
+    </div>
   </div>
 </script>
 
@@ -71,6 +84,21 @@
   {{/with}}
   </div>
 </script>
+
+<script id="rink-view-template" type="text/x-handlbars-template">
+  <div id="inside">
+    <h2>{{name}}</h2>
+    <h3>{{address}}&nbsp;&nbsp;<span class="type">({{type}} Rink)</span></h3>
+    <%= link_to image_tag('direction.png', :size => "18x18") + 'Directions', '#', :class => 'button' %>
+    <%= link_to image_tag('info.png', :size => "18x18") + 'City Info', '#', :class => 'button' %>
+
+    {{#if note}}
+      <h4>Notes</h4>
+      <p>{{note}}</p>
+    {{/if}}
+  </div>
+</script>
+
 
 <script id="activity-single-template" type="text/x-handlebars-template">
   <tr width="100%" style="vertical-align:text-top">

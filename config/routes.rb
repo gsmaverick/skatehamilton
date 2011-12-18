@@ -1,7 +1,5 @@
 Skatehamilton::Application.routes.draw do
-  get "home/index"
-
-  root :to => "home#index"
+  root :to => "rinks#index"
 
   match "about" => "home#about"
   match "api" => "home#api"
