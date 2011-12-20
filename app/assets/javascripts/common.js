@@ -222,6 +222,4 @@ SH.views.MapMarkerView = Backbone.View.extend({
 
     return new google.maps.Marker(a);
   },
-
-  click: function() {},
 });

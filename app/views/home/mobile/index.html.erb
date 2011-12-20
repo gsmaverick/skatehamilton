@@ -1,9 +1,18 @@
 <div id="header">
+  <a href="#" class="button" id="back" style='display: none'>
+    <%= image_tag 'arrow_left1.png', 
+                  :alt => 'Back', 
+                  :size => '18x18' %>
+  </a>
   <h1>Skate Hamilton</h1>
-  <a href="#" class='button' id="search"><%= image_tag "search.png", :alt => "Search", :size => "18x18" %></a>
+  <a href="#search" class="button" id="search">
+    <%= image_tag 'search.png', 
+                  :alt => 'Search', 
+                  :size => '18x18' %>
+  </a>
 </div>
 
-<div id="bubble_container">
+<div id="bubble_container" style='display: none'>
   <div class="up_triangle"></div>
   <div id="info_bubble" class="tap-closeable">
     <h3>welcome.</h3>
@@ -13,7 +22,7 @@
   </div>
 </div>
 
-<div id="cover"></div>
+<div id="cover" style='display: none'></div>
 
 <div id="map"></div>
 
@@ -39,23 +48,29 @@
 </script>
 
 <script id='search-template' type='text/x-handlebars-template'>
-  <div id="search_container">
-    <div id='inside'>
-      <form id='search_form'>
-        <div class='input_holder'>
-          <input placeholder='Enter address or rink name' type='text' id='query' />
-        </div>
-      </form>
-
-      <div class='current'><%= image_tag 'rounded.png', :size => "16x16" %>Center map on my location</div>
-      <h3>Past Searches</h3>
-      <ul>
-        <li>1 Chatterson Dr.</li>
-        <li>1280 Main Street</li>
-        <li>Main at King</li>
-      </ul>
+  <div style='margin-top:46px;height:0;'></div>
+  {{#if geo}}
+  <div class='current' id="current">
+    <%= image_tag 'rounded.png', :size => "18x18" %>
+    Center map on my location
+    <div class='disclosed'>
+      <%= image_tag 'arrow_right.png', :size => '40x40' %>
     </div>
+    <div class='clearfix'></div>
   </div>
+  {{/if}}
+  <form id='search_form'>
+    <div class='input_holder'>
+      <input placeholder='Enter address or rink name' type='text' id='query' />
+    </div>
+  </form>
+
+  <!--<ul>
+    <li>Your search history will appear here</li>
+    <li>1 Chatterson Dr.</li>
+    <li>1280 Main Street</li>
+    <li>Main at King</li>
+  </ul>-->
 </script>
 
 <script id="rink-detail-template" type="text/x-handlbars-template">
@@ -100,10 +115,10 @@
 </script>
 
 
-<script id="activity-single-template" type="text/x-handlebars-template">
-  <tr width="100%" style="vertical-align:text-top">
+<script id='activity-single-template' type='text/x-handlebars-template'>
+  <tr width='100%' style='vertical-align:text-top'>
     {{#if rows}}
-      <th width="35%" class="{{class}}" rowspan="{{rows}}">
+      <th width='35%' class='{{class}}' rowspan='{{rows}}'>
         <b>{{name}}</b>
       </th>
     {{/if}}

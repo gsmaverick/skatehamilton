@@ -5,6 +5,8 @@ Skatehamilton::Application.routes.draw do
   match "api" => "home#api"
   match "contact" => "home#contact"
 
+  match "rinks/search" => "rinks#search"
+  
   resources :rinks
   
   # The priority is based upon order of creation:

@@ -1,6 +1,11 @@
 //= require jquery
 //= require common
 
+/**
+ * @fileoverview Desktop specific javascript code for SkateHamilton.
+ * @author gavin.schulz@gmail.com (Gavin Schulz)
+ */
+
 SH.views.HeaderView = Backbone.View.extend({
   el: '#header',
 
@@ -19,6 +24,7 @@ SH.views.HeaderView = Backbone.View.extend({
         if (status == google.maps.GeocoderStatus.OK) {
           SH.app.centerToLocation(results[0].geometry.location);
           $('#search_address').val(SH.app.search_text);
+          $('#search_address').blur();
         }
       }
     );
@@ -170,7 +176,7 @@ _.extend(SH.app, {
    * Default contents of the header search input field.
    * @type {string}
    */
-  search_text: 'Address...',
+  search_text: 'Enter address or rink name',
 
   /**
    * Utility function to get size of browser viewport.
@@ -269,6 +275,16 @@ SH.Router = Backbone.Router.extend({
 
   rink: function(id) {
     this.init();
+
+    // Get the rest of the rink information from the server
+    var rink = SH.app.Rinks.get(id);
+
+    rink.fetch({success: function() {
+      // Render a RinkView in the left panel
+      (new SH.views.RinkView({el: '#left_content', model: rink})).render();
+      SH.app.left_panel_control.togglePanel(true);
+      $('#entrance').show();
+    }, data: {deep: true}});
   },
 
   /**

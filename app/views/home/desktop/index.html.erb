@@ -11,7 +11,7 @@
   <div id="input_container">
     <h3>FIND A RINK</h3>
     <form style='display:inline'>
-      <input type="text" name="address" id="search_address" value="Address..." />
+      <input type="text" name="address" id="search_address" value="Enter address or rink name" />
       <%= link_to image_tag("search.png", :size => "32x32", :id => "search_submit", :alt => "Search"), "#" %>
     </form>
   </div>
@@ -150,6 +150,9 @@
 <!-- SH.views.RinkView Template -->
 <script id="rink-view-template" type="text/x-handlebars-template">
   <div class="rink_details">
+    <div id='entrance'>
+      Skate Hamilton helps you find a place to skate, play hockey or enjoy the outdoors in Hamilton.  Enjoy.
+    </div>
     <h2>{{name}}</h2>
     <h4>{{address}}&nbsp;&nbsp;<span class="type">({{type}} Rink)</span></h4>
     <ul class='action_buttons'>
@@ -159,16 +162,26 @@
         </button>
       </li>
       <li class='btn'>
-        <button href='' onclick=";window.location.href=this.getAttribute('href');return false;">
+        <button href='http://www.hamilton.ca/CultureandRecreation/Recreation/CentresPoolsArenas/' onclick=";window.location.href=this.getAttribute('href');return false;">
           <img src='/assets/info.png' height='16' width='16' />City Info
         </button>
       </li>
       <li class='btn'>
-        <button href='' onclick=";window.location.href=this.getAttribute('href');return false;" class='last'>
+        <button onclick=';var x=document.getElementById("share");x.style.display=(x.style.display=="block")?"none":"block";return false;' class='last'>
           <img src='/assets/info.png' height='16' width='16' />Share
         </button>
       </li>
     </ul>
+    <div class='share' id='share'>
+      <!-- AddThis Button BEGIN -->
+      <div class="addthis_toolbox addthis_default_style ">
+      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+      <a class="addthis_button_tweet"></a>
+      <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+      <a class="addthis_counter addthis_pill_style"></a>
+      </div>
+      <!-- AddThis Button END -->
+    </div>
     <h3>Map</h3>
     <img src="http://maps.googleapis.com/maps/api/staticmap?center={{lat}},{{lng}}&amp;zoom=15&amp;size=353x240&amp;maptype=roadmap&amp;sensor=false&amp;markers=color:red%7C{{lat}},{{lng}}" class="map">
     <br/>
@@ -208,3 +221,8 @@
 <script type="text/javascript">
   var rinks = <%=@Rinks.html_safe %>;
 </script>
+
+<script type="text/javascript">
+    var addthis_config = {"data_track_clickback":true};
+</script>
+<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=[YOUR PROFILE ID]"></script>

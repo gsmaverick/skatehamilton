@@ -46,6 +46,8 @@ body {
     float: left;
     padding: 6px 6px;
     cursor: pointer;
+    outline: 0;
+    border: 0;
   }
 
   #input_container {
@@ -208,7 +210,7 @@ body {
     }
 
     .rink_details {
-      margin-top: -10px; // Don't want to start as far down when we show rink info
+      margin-top: -10px;
 
       h2 {
         font-size: 2.8em;
@@ -235,6 +237,21 @@ body {
       }
 
       h3:first-child { margin-top: 0px; }
+
+      .share {
+        padding-top: 10px;
+        display: none;
+      }
+
+      #entrance {
+        background: #FEFF86;
+        display: none;
+        padding: 8px;
+        margin-bottom: 10px;
+        font-size: 1.4em;
+        line-height: 1.4;
+        border: 2px solid #E7E7CA;
+      }
 
       p {
         font-size: 1.4em;

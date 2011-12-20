@@ -1,13 +1,10 @@
 //= require zepto
 //= require common
 
-// Copyright 2011 OpenHamilton.  All Rights Reserved.
-
 /**
  * @fileoverview Mobile javascript file to enable a native-like
  * experience on Android/iOS devices.
  * @author gavin.schulz@gmail.com (Gavin Schulz)
- *
  */
 
 var App = {
@@ -58,22 +55,7 @@ var App = {
 
   inputActive: false,
 
-  /**
-   * Closes the info bubble shown at load to the visitor.
-   *
-   */
-  closeInfo: function() {
-    $("#bubble_container").remove();
-    $("#cover").remove();
-  },
-
   init: function() {
-    // People will see the pop-up every time so as to give us
-    // more time to load the map and rinks in the background
-    $(".tap-closeable").bind('click', function() {
-      App.closeInfo();
-      $(".tap-closeable").unbind();
-    });
 
     // Seeing the full details of a rink
     $("#rink_popup").live('click', function() {
@@ -99,16 +81,6 @@ var App = {
       $("#back").remove();
       window.scrollTo(0,1);
       google.maps.event.trigger(App.map, 'resize');
-      e.preventDefault();
-    });
-
-    $("#search").live('click', function(e) {
-      /*$('#search_box').toggle();
-      window.scrollTo(0,1);*/
-      var template = Handlebars.compile($("#search-template").html());
-      $("body").append(template());
-      $("#map").hide();
-      $("#header").append('<a href="#" class="button" id="back"><%= image_tag "arrow_left1.png", :alt => "Back", :size => "18x18" %></a>');
       e.preventDefault();
     });
 
@@ -182,13 +154,7 @@ var App = {
         App.updateCenter();
       });
 
-    var mapOpts = {
-      zoom: 14,
-      center: App.mapCenter,
-      mapTypeId: google.maps.MapTypeId.ROADMAP,
-      streetViewControl: false,
-      zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_CENTER }
-    };
+    
 
     App.map = new google.maps.Map(document.getElementById('map'), mapOpts);
 
@@ -283,3 +249,9 @@ window.onresize = function() {
     alert('onresize');
   }
 }
+
+
+SH.Router = Backbone.Router.extend({
+  
+});
+
