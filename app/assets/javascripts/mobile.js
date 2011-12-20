@@ -304,6 +304,11 @@ SH.Router = Backbone.Router.extend({
     this.search_view = null;
     this.header.hideBack();
     this.header.showSearch();
+
+    if ($('#rink_details'))
+      $('#rink_details').remove(), 
+      $('#map').show(),
+      google.maps.event.trigger(SH.app.map, 'resize');
   },
 });
 
