@@ -39,7 +39,7 @@ class RinksController < ApplicationController
       @rinks = Rink.near([params[:lat].to_f, params[:lng].to_f], 20, :order => :distance, :limit => 10)
       render :json => @rinks.to_json
     elsif params[:query].present?
-      @rinks = Rink.find(:all, :conditions => ['name LIKE ?', "%#{params[:query]}%"])
+      @rinks = Rink.find(:all, :conditions => ['name #{DATABASE_OPERATOR[:like_operator]} ?', "%#{params[:query]}%"])
       render :json => @rinks.to_json
     else
       render :json => {:error => "Missing lat and lng url parameters or a name parameter"}

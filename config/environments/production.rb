@@ -57,4 +57,8 @@ Skatehamilton::Application.configure do
 
   # Send deprecation notices to registered listeners
   config.active_support.deprecation = :notify
+
+  DATABASE_OPERATOR = {
+    :like_operator => 'ILIKE' #postgres awfulness
+  }
 end
