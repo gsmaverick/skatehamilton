@@ -73,20 +73,20 @@
   </ul>-->
 </script>
 
-<script id="rink-detail-template" type="text/x-handlbars-template">
+<script id="rink-view-template" type="text/x-handlbars-template">
   <div id="inside">
-  {{#with rink}}
+    <div id='entrance'>
+      Skate Hamilton helps you find a place to skate, play hockey or enjoy the outdoors in Hamilton.  Enjoy.
+    </div>
+
     <h2>{{name}}</h2>
-    <h3>{{address}}&nbsp;&nbsp;<span class="type">({{rink_type}} Rink)</span></h3>
+    <h3>{{address}}&nbsp;&nbsp;<span class="type">({{type}} Rink)</span></h3>
     <%= link_to image_tag('direction.png', :size => "18x18") + 'Directions', '#', :class => 'button' %>
     <%= link_to image_tag('info.png', :size => "18x18") + 'City Info', '#', :class => 'button' %>
 
     <h4>Activities</h4>
-    {{#if activities.length}}
-      <table border='0' class='activities' cellspacing='0' style='width:100%;'>
-      {{#each activities}}
-        {{{activity this}}}
-      {{/each}}
+    {{#if hasActivities}}
+      <table border='0' class='activities' cellspacing='0' style='width:100%;' id='activities'>
       </table>
     {{else}}
       <p>No scheduled public activities.</p>
@@ -96,26 +96,11 @@
       <h4>Notes</h4>
       <p>{{note}}</p>
     {{/if}}
-  {{/with}}
-  </div>
-</script>
-
-<script id="rink-view-template" type="text/x-handlbars-template">
-  <div id="inside">
-    <h2>{{name}}</h2>
-    <h3>{{address}}&nbsp;&nbsp;<span class="type">({{type}} Rink)</span></h3>
-    <%= link_to image_tag('direction.png', :size => "18x18") + 'Directions', '#', :class => 'button' %>
-    <%= link_to image_tag('info.png', :size => "18x18") + 'City Info', '#', :class => 'button' %>
-
-    {{#if note}}
-      <h4>Notes</h4>
-      <p>{{note}}</p>
-    {{/if}}
   </div>
 </script>
 
 
-<script id='activity-single-template' type='text/x-handlebars-template'>
+<script id='activity-view-template' type='text/x-handlebars-template'>
   <tr width='100%' style='vertical-align:text-top'>
     {{#if rows}}
       <th width='35%' class='{{class}}' rowspan='{{rows}}'>

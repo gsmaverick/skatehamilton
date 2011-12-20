@@ -63,6 +63,7 @@ SH.views.CoverView = Backbone.View.extend({
   },
 
   initialize: function() {
+    _.bindAll(this, 'close');
     $('#bubble_container').css('display', 'block');
     $('#cover').css('display', 'block');
   }
@@ -126,7 +127,7 @@ _.extend(SH.app, {
    * @type {object}
    */
   mapOpts: {
-    zoom: 14,
+    zoom: 13,
     center: SH.consts.default_center,
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     streetViewControl: false,
@@ -166,10 +167,10 @@ SH.Router = Backbone.Router.extend({
       {'address' : $('#query').val() + ' Hamilton, Ontario'},
       function(results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
-          // stuff here
+          self.updateCenter(results[0].geometry.location);
           self.closeSearchView();
         } else {
-          // errors!!!
+          // errors
         }
       }
     );
@@ -177,10 +178,31 @@ SH.Router = Backbone.Router.extend({
 
   search_geo: function() {
     this.closeSearchView();
+    var self = this;
 
     navigator.geolocation.getCurrentPosition(function(pos) {
-      // update center of the map
+      self.updateCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
     });
+  },
+
+  /**
+   * Updates the position of the map marker to denote the position
+   * the map is centered on.
+   */
+  updateCenter: function(center) {
+    // Remove existing marker from the map
+    if (SH.app.locationMarker)
+      SH.app.locationMarker.setMap(null);
+
+    // Center on current location
+    SH.app.locationMarker = new google.maps.Marker({
+      position: center,
+      map: SH.app.map,
+      title: "Current Location"
+    });
+
+    SH.app.map.setZoom(13);
+    SH.app.map.setCenter(center);
   },
 
   addMarkers: function() {
@@ -195,6 +217,7 @@ SH.Router = Backbone.Router.extend({
         type: rink._type(),
         cb: function() {
           (new SH.views.RinkPopupView({ model: rink })).render();
+          
         }
       };
 
@@ -206,15 +229,51 @@ SH.Router = Backbone.Router.extend({
     if (this.search_view)
       this.closeSearchView();
     
-    if (!this.map) {
+    if (!SH.app.map) {
       SH.app.map = new google.maps.Map(document.getElementById('map'), SH.app.mapOpts);
       SH.app.Rinks = new SH.collections.Rinks(window.rinks);
       this.addMarkers();
     }
+
+    this.updateCenter(SH.app.mapOpts.center);
+
+    if ($('#rink_details'))
+      $('#rink_details').remove(), 
+      $('#map').show(), 
+      google.maps.event.trigger(SH.app.map, 'resize'), 
+      this.updateCenter(SH.app.mapOpts.center);
   },
 
   rink: function(id) {
-    
+    $('#map').hide();
+    this.cover.close();
+
+    var ent = false;
+    if (!SH.app.map) {
+      SH.app.map = new google.maps.Map(document.getElementById('map'), SH.app.mapOpts);
+      SH.app.Rinks = new SH.collections.Rinks(window.rinks);
+      this.addMarkers();
+      ent = true;
+    }
+
+    this.updateCenter(SH.app.mapOpts.center);
+
+    var template = Handlebars.compile($('#rink-details-template').html());
+    $('body').append(template());
+
+    // Get the rest of the rink information from the server
+    var rink = SH.app.Rinks.get(id);
+
+    var self = this;
+
+    rink.fetch({success: function() {
+      // Render a RinkView in the left panel
+      (new SH.views.RinkView({el: '#rink_details', model: rink})).render();
+      if (ent)
+        $('#entrance').show();
+      self.header.showBack();
+      self.header.showSearch();
+    }, data: {deep: true}});
   },
 
   closeSearchView: function() {
@@ -222,10 +281,6 @@ SH.Router = Backbone.Router.extend({
     this.search_view = null;
     this.header.hideBack();
     this.header.showSearch();
-  },
-
-  updateCenter: function() {
-    
   },
 });
 
