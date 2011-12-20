@@ -105,7 +105,24 @@ SH.views.SearchView = Backbone.View.extend({
 });
 
 SH.views.RinkPopupView = Backbone.View.extend({
-  
+  template_id: '#rink-popup-template',
+  el: 'body',
+
+  events: {
+    'click #insid_e': 'click'
+  },
+
+  render: function() {
+    var template = Handlebars.compile($(this.template_id).html());
+    $('body').append(template(this.model.toJSON()));
+    this.el = '#rink_popup';
+
+    return this;
+  },
+
+  click: function() {
+    SH.app.Router.navigate('/rinks/' + this.model.get('id'), true);
+  }
 });
 
 _.extend(SH.app, {
@@ -216,8 +233,10 @@ SH.Router = Backbone.Router.extend({
         id: rink.get('id'),
         type: rink._type(),
         cb: function() {
-          (new SH.views.RinkPopupView({ model: rink })).render();
+          if (SH.app.popup)
+            SH.app.popup.remove(), SH.app.popup = null;
           
+          SH.app.popup = (new SH.views.RinkPopupView({ model: rink })).render();
         }
       };
 
@@ -256,6 +275,9 @@ SH.Router = Backbone.Router.extend({
       ent = true;
     }
 
+    if (SH.app.popup)
+      SH.app.popup.remove(), SH.app.popup = null;
+
     this.updateCenter(SH.app.mapOpts.center);
 
     var template = Handlebars.compile($('#rink-details-template').html());
@@ -269,6 +291,7 @@ SH.Router = Backbone.Router.extend({
     rink.fetch({success: function() {
       // Render a RinkView in the left panel
       (new SH.views.RinkView({el: '#rink_details', model: rink})).render();
+
       if (ent)
         $('#entrance').show();
       self.header.showBack();
