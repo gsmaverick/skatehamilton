@@ -246,6 +246,12 @@ _.extend(SH.app, {
           rink.fetch({success: function() {
             // Render a RinkView in the left panel
             (new SH.views.RinkView({el: '#left_content', model: rink})).render();
+            window.addthis_share = {
+              url: 'http://skatehamilton.herokuapp.com/rinks/' + rink.get('id'),
+              title: rink.get('name') + ' - Skate Hamilton',
+              description: 'Find skating rinks in Hamilton!'
+            };
+            window.addthis.toolbox('#share');
             SH.app.left_panel_control.togglePanel(true);
           }, data: {deep: true}});
         }
@@ -266,7 +272,8 @@ _.extend(SH.app, {
 SH.Router = Backbone.Router.extend({
   routes: {
     '': 'index',
-    '/rinks/:id': 'rink'
+    '/rinks/:id': 'rink',
+    '.*actions': 'index'
   },
 
   index: function() {
@@ -282,6 +289,12 @@ SH.Router = Backbone.Router.extend({
     rink.fetch({success: function() {
       // Render a RinkView in the left panel
       (new SH.views.RinkView({el: '#left_content', model: rink})).render();
+      var addthis_share = {
+        url: 'http://skatehamilton.herokuapp.com/rinks/' + rink.get('id'),
+        title: rink.get('name') + ' - Skate Hamilton',
+        description: 'Find skating rinks in Hamilton!'
+      };
+      window.addthis.toolbox('#share', {}, addthis_share);
       SH.app.left_panel_control.togglePanel(true);
       $('#entrance').show();
     }, data: {deep: true}});
