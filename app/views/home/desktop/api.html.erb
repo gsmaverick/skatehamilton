@@ -18,8 +18,15 @@
     <p>
       You can download the full data set that we compiled to build SkateHamilton from <a href="http://openhamilton.ca/datasets">OpenHamilton</a>.  The data is encoded using the General Recreational Acitivty Format (<a href="http://openhamilton.ca/graf/">GRAF</a>) which is an OpenHamilton specification for formatting information related to recreational activities.  We also welcome any new developers and OpenData enthusiasts to our <a href="#">Google Group</a> where most of the OpenHamilton discussion and work takes place.
     </p>
-    <p>
+    <!--<p>
       We are working on developing a REST style API for developers to consume the data directly from us and would welcome any comments you may have on it.  You can take a look at the code behind this site at <a href="https://github.com/gsmaverick/skatehamilton">GitHub</a> and contribute if you see any changes that need to be made.
+    </p>-->
+    <h2>Skate Hamilton API</h2>
+    <p>
+      <ul>
+        <li><b>/rinks/:id</b>&nbsp;-&nbsp;Returns a JSON object containing the rink details.  Pass <b>deep=true</b> to get a deep-linked JSON object that includes all data regarding activities that take place at that rink.  <b>NOTE</b>: This is the only way to get information about activities at this time.</li>
+        <li><b>/rinks/search</b>&nbsp;-&nbsp;There are two options that can be passed to this endpoint.  Pass <b>query=[your query]</b> to search against the names of all the parks in Skate Hamilton.  Pass <b>lat=[lat]&lng=[lng]</b> to return the closest rinks to the specificied point.  Currently this method only returns the closest 10 rinks.  We don't currently support returning multiple pages.</li>
+      </ul>
     </p>
   </div>
 

@@ -103,6 +103,21 @@ body {
       border-bottom: 1px solid #AAA;
     }
 
+    h2 {
+      font-size: 1.6em;
+    }
+
+    ul {
+      margin: 0 0 0 20px;
+      padding: 0;
+
+      li {
+        font-size: 1.4em;
+        line-height: 1.5;
+        margin-bottom: 5px;
+      }
+    }
+
     p {
       font-size: 1.4em;
       line-height: 2;
