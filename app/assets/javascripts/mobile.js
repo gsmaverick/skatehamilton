@@ -25,6 +25,7 @@ SH.views.HeaderView = Backbone.View.extend({
 
   search: function(e) {
     e.preventDefault();
+    _gaq.push(['_trackEvent', 'Search', 'Start']);
     this.vent.trigger('search:start');
   },
 
@@ -84,10 +85,12 @@ SH.views.SearchView = Backbone.View.extend({
 
   submit: function(e) {
     e.preventDefault();
+    _gaq.push(['_trackEvent', 'Search', 'Submit']);
     this.vent.trigger('search:submit');
   },
 
   center: function() {
+    _gaq.push(['_trackEvent', 'Search', 'Geolocate']);
    this.vent.trigger('search:geolocate');
   },
 
@@ -266,6 +269,8 @@ SH.Router = Backbone.Router.extend({
   rink: function(id) {
     $('#map').hide();
     this.cover.close();
+
+    _gaq.push(['_trackEvent', 'Rink', 'Load', id]);
 
     var ent = false;
     if (!SH.app.map) {

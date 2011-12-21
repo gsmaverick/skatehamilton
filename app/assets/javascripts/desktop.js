@@ -17,6 +17,8 @@ SH.views.HeaderView = Backbone.View.extend({
   },
 
   submitForm: function(e) {
+    _gaq.push(['_trackEvent', 'Search', 'Submit']);
+
     e.preventDefault();
     SH.utils.geocoder.geocode(
       {'address' : $('#search_address').val() + ' Hamilton, Ontario'}, 
@@ -104,14 +106,15 @@ SH.views.LeftPanelView = Backbone.View.extend({
   },
 
   home: function(e) {
-    console.log('home');
     e.preventDefault();
+    _gaq.push(['_trackEvent', 'Panel', 'Home']);
     var template = Handlebars.compile($('#home-template').html());
     $('#left_content').html(template());
   },
 
   find: function(e) {
     e.preventDefault();
+    _gaq.push(['_trackEvent', 'Panel', 'Find']);
 
     if (navigator.geolocation) { // Geolocate ourselves to the user's position
       navigator.geolocation.getCurrentPosition(function(pos) {
@@ -136,12 +139,14 @@ SH.views.LeftPanelView = Backbone.View.extend({
 
   add: function(e) {
     e.preventDefault();
+    _gaq.push(['_trackEvent', 'Panel', 'Add']);
     var template = Handlebars.compile($('#add-rink-template').html());
     $('#left_content').html(template());
   },
 
   mobile: function(e) {
     e.preventDefault();
+    _gaq.push(['_trackEvent', 'Panel', 'Mobile']);
     var template = Handlebars.compile($('#mobile-template').html());
     $('#left_content').html(template());
   }
@@ -242,6 +247,7 @@ _.extend(SH.app, {
         id: rink.get('id'),
         type: rink._type(),
         cb: function(e) {
+          _gaq.push(['_trackEvent', 'Rinks', 'Load', rink.get('id')]);
           // Get the rest of the rink information from the server
           rink.fetch({success: function() {
             // Render a RinkView in the left panel
