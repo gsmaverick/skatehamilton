@@ -1,0 +1,27 @@
+<script id="rink-popup-template" type="text/x-handlebars-template">
+  <div id="inside">
+    <h4>{{name}}</h4>
+    <span>{{address}}&nbsp;&nbsp;&nbsp;({{type}})</span>
+  </div>
+  <%= image_tag "arrow_right.png", :alt => "Details", :class => "disclose", :size => "44x44" %>
+</script>
+
+
+<%= render 'home/mobile/search' %>
+<%= render 'rinks/mobile/rink' %>
+<%= render 'rinks/mobile/list' %>
+<%= render 'rinks/mobile/item' %>
+
+<script id='activity-view-template' type='text/x-handlebars-template'>
+  {{#if rows}}
+    <th width='35%' class='{{class}}' rowspan='{{rows}}'>
+      <b>{{name}}</b>
+    </th>
+  {{/if}}
+  <td width="35%" class="{{class}}">
+    {{day}}
+  </td>
+  <td class="{{class}} end">
+    {{times}}
+  </td>
+</script>

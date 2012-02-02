@@ -1,0 +1,33 @@
+<div id="header">
+  <ul id='back' class='buttons' style='position: absolute; left: 6px; top: 6px; display: none;'>
+    <li><%= image_tag 'arrow_left1.png', 
+                      :alt => 'Back', 
+                      :size => '18x18',
+                      :style => 'margin-left: 3px;' %>
+    </li>
+  </ul>
+  
+  <h1 id='details' style='display: none'>Rink Details</h1>
+  <h1 id='search_title' style='display: none'>Search</h1>
+
+  <ul id='bottom'>
+    <li id='map_btn' class='active_left'>
+      <%= image_tag 'grey_marker.png', 
+                    :style => 'margin-right:2px;' %>
+      Map
+    </li>
+    <li id='list_btn' class=''>
+      <%= image_tag 'list.png', 
+                    :size => '16x16' %>
+      List
+    </li>
+  </ul>
+
+  <ul class='buttons' style='position: absolute; right: 6px; top: 6px;'>
+    <li id='search'>
+      <%= image_tag 'search.png', 
+                    :alt => 'Search', 
+                    :size => '18x18' %>
+    </li>
+  </ul>
+</div>

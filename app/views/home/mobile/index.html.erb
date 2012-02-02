@@ -1,21 +1,9 @@
-<div id="header">
-  <a href="#" class="button" id="back" style='display: none'>
-    <%= image_tag 'arrow_left1.png', 
-                  :alt => 'Back', 
-                  :size => '18x18' %>
-  </a>
-  <h1>Skate Hamilton</h1>
-  <a href="#search" class="button" id="search">
-    <%= image_tag 'search.png', 
-                  :alt => 'Search', 
-                  :size => '18x18' %>
-  </a>
-</div>
+<%= render 'home/mobile/header' %>
 
 <div id="bubble_container" style='display: none'>
   <div class="up_triangle"></div>
   <div id="info_bubble" class="tap-closeable">
-    <h3>welcome.</h3>
+    <h3>skate hamilton.</h3>
     <div class="close"><div class="image"></div><div class="clearfix"></div></div>
     <div class="clearfix"></div>
     <div id="words">Find a place to skate, play hockey and enjoy the outdoors in Hamilton.  Tap on a map marker to get more information.</div>
@@ -24,94 +12,10 @@
 
 <div id="cover" style='display: none'></div>
 
-<div id="map"></div>
+<div id='content'></div>
 
 <script type="text/javascript">
   var rinks = <%= @Rinks.html_safe %>;
-  var rinkPath = '<%= rinks_path %>';
 </script>
 
-<script id="rink-popup-template" type="text/x-handlebars-template">
-  <div id="rink_popup">
-    <div id="insid_e">
-      <h4>{{name}}</h4>
-      <span>{{address}}&nbsp;&nbsp;&nbsp;({{type}})</span>
-    </div>
-    <%= image_tag "arrow_right.png", :alt => "Details", :class => "disclose", :size => "44x44" %>
-  </div>
-</script>
-
-<script id="rink-details-template" type="text/x-handlebars-template">
-  <div id="rink_details">
-    <h3 style="margin-top: 60px; text-align: center;"><b>Loading...</b></h3>
-  </div>
-</script>
-
-<script id='search-template' type='text/x-handlebars-template'>
-  <div style='margin-top:46px;height:0;'></div>
-  {{#if geo}}
-  <div class='current' id="current">
-    <%= image_tag 'rounded.png', :size => "18x18" %>
-    Center map on my location
-    <div class='disclosed'>
-      <%= image_tag 'arrow_right.png', :size => '40x40' %>
-    </div>
-    <div class='clearfix'></div>
-  </div>
-  {{/if}}
-  <form id='search_form'>
-    <div class='input_holder'>
-      <input placeholder='Enter address or rink name' type='text' id='query' />
-    </div>
-  </form>
-
-  <!--<ul>
-    <li>Your search history will appear here</li>
-    <li>1 Chatterson Dr.</li>
-    <li>1280 Main Street</li>
-    <li>Main at King</li>
-  </ul>-->
-</script>
-
-<script id="rink-view-template" type="text/x-handlbars-template">
-  <div id="inside">
-    <div id='entrance'>
-      Skate Hamilton helps you find a place to skate, play hockey or enjoy the outdoors in Hamilton.  Enjoy.
-    </div>
-
-    <h2>{{name}}</h2>
-    <h3>{{address}}&nbsp;&nbsp;<span class="type">({{type}} Rink)</span></h3>
-    <%= link_to image_tag('direction.png', :size => "18x18") + 'Directions', '#', :class => 'button' %>
-    <%= link_to image_tag('info.png', :size => "18x18") + 'City Info', '#', :class => 'button' %>
-
-    <h4>Activities</h4>
-    {{#if hasActivities}}
-      <table border='0' class='activities' cellspacing='0' style='width:100%;' id='activities'>
-      </table>
-    {{else}}
-      <p>No scheduled public activities.</p>
-    {{/if}}
-
-    {{#if note}}
-      <h4>Notes</h4>
-      <p>{{note}}</p>
-    {{/if}}
-  </div>
-</script>
-
-
-<script id='activity-view-template' type='text/x-handlebars-template'>
-  <tr width='100%' style='vertical-align:text-top'>
-    {{#if rows}}
-      <th width='35%' class='{{class}}' rowspan='{{rows}}'>
-        <b>{{name}}</b>
-      </th>
-    {{/if}}
-    <td width="35%" class="{{class}}">
-      {{day}}
-    </td>
-    <td class="{{class}} end">
-      {{times}}
-    </td>
-  </tr>
-</script>
+<%= render 'home/mobile/templates' %>

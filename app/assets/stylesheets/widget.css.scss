@@ -1,0 +1,153 @@
+#SH_container {
+	margin: 0;
+	padding: 0;
+
+	font-family: Helvetica, Arial, sans-serif;
+
+	position: absolute;
+
+	.clearfix { width: 1; height:1; }
+	.clearfix { zoom: 1 }
+	.clearfix:before, 
+	.clearfix:after { content: ""; display: table; }
+	.clearfix:after { clear: both }
+
+	#SH_header {
+		width: 100%;
+		height: 44px;
+		z-index: 100;
+		color: white;
+		overflow: hidden;
+		
+		background: #111111;
+		filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#3F3F3F', endColorstr='#111111');
+		background-image:     -webkit-gradient(linear, left top, left bottom, from(#3F3F3F), to(#111111));
+		background-image: -moz-linear-gradient(top, #3F3F3F, #111111);
+		background-image:   -o-linear-gradient(top, #3F3F3F, #111111);
+
+		h1 {
+			margin: 0;
+			padding: 0 10px 0 0;
+			float: left;
+			line-height: 44px;
+			font-size: 24px;
+		}
+
+		#SH_logo {
+			float: left;
+			margin: 6px;
+			outline: 0;
+			border: 0;
+		}
+
+		#SH_form {
+			margin: 0;
+			padding: 0;
+		}
+
+		#SH_input {
+			float: right;
+			padding-right: 6px;
+			height: 44px;
+
+			#SH_q {
+				float: right;
+				color: #777;
+				font-size: 16px;
+				line-height: 2;
+				height: 32px;
+
+				outline: none;
+				border: 1px solid black;
+
+				padding: 0 5px;
+				margin-top: 6px;
+				width: 210px;
+
+				   -moz-box-shadow: inset 0px 0px 4px #AAA;
+				-webkit-box-shadow: inset 0px 0px 4px #AAA;
+				        box-shadow: inset 0px 0px 4px #AAA;
+			}
+
+			#SH_submit {
+				border: none;
+				outline: none;
+				float: right;
+				display: inline;
+				margin: 6px 0 6px 6px;
+				padding: 0;
+			}
+		}
+	}
+
+	#SH_popup {
+		display: none;
+
+		position: absolute;
+		top: 80px;
+		width: 400px;
+		height: 450px;
+		left: 50%;
+		margin-left: -203px;
+
+		background: white;
+		z-index: 10000;
+
+		border: 1px solid #AAA;
+		border-right: 1px solid #999;
+		border-bottom: 1px solid #999;
+		padding: 6px;
+
+		   -moz-box-shadow: 1px 1px 6px #888;
+		-webkit-box-shadow: 1px 1px 6px #888;
+		        box-shadow: 1px 1px 6px #888;
+		
+		h1 {
+			margin: 4px 4px;
+			padding: 0;
+			font-size: 24px;
+			line-height: 1;
+		}
+
+		h3 {
+			color: #333;
+			margin: 2px 4px;
+			padding: 0;
+
+			font-weight: normal;
+			font-size: 16px;
+			line-height: 1.2;
+		}
+
+		.type {
+			color: green;
+			font-size: 14px;
+			font-weight: bold;
+		}
+
+		.close {
+		    position: absolute;
+		    right: 10px;
+		    top: 10px;
+		    cursor: pointer;
+		    font-size: 12px;
+
+		    padding: 4px;
+
+		    .image {
+		      background-image: url('/assets/gmail.png');
+		      background-position: -40px -100px;
+		      height: 16px;
+		      width: 16px;
+		      margin-left: 5px;
+		      vertical-align: middle;
+		    }
+
+		    &:hover {
+		    	.image {
+		      		background-color: #EEE;
+		    	}
+		  	}
+		}
+	}
+}

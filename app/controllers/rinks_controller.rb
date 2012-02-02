@@ -1,11 +1,30 @@
 class RinksController < ApplicationController
   def index
-    @Rinks = Rink.all(:select => 'id, address, latitude, longitude, name, rink_type').to_json
+    @Rinks = Rink.all.to_json(:include => {
+      :activities => {
+        :include => :activity_times
+      }
+    })
 
     if isMobile or params[:mobile]
       render "home/mobile/index", :layout => "mobile"
     else
       render "home/desktop/index", :layout => "desktop"
+    end
+  end
+
+  def widget
+    @Rinks = Rink.all(:select => 'id, address, latitude, longitude, name, rink_type')
+
+    respond_to do |format|
+      format.json {
+        render :json => @Rinks.to_json,
+               :callback => params[:callback]
+      }
+
+      format.html {
+        redirect_to root_url
+      }
     end
   end
 
@@ -15,11 +34,20 @@ class RinksController < ApplicationController
     respond_to do |format|
     	format.json {
     	  if params[:deep]
-    	    render :json => @rink.to_json(:include => {
-    	  	  :activities => {
-    	  	    :include => :activity_times
-    	  	  }
-    	    })
+          if params[:callback]
+            render :json => @rink.to_json(:include => {
+    	  	    :activities => {
+    	  	      :include => :activity_times
+    	  	    }
+            }),
+            :callback => params[:callback]
+          else
+            render :json => @rink.to_json(:include => {
+              :activities => {
+                :include => :activity_times
+              }
+            })
+          end
     	  else
     	  	render :json => @rink.to_json
     	  end

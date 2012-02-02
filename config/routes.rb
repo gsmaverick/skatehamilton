@@ -6,6 +6,7 @@ Skatehamilton::Application.routes.draw do
   match "contact" => "home#contact"
 
   match "rinks/search" => "rinks#search"
+  match "rinks/widget" => "rinks#widget"
   
   resources :rinks
   

@@ -1,0 +1,19 @@
+<script id='search-template' type='text/x-handlebars-template'>
+  <div class='spacer'></div>
+  {{#if geo}}
+    <div class='current' id="current">
+      <%= image_tag 'rounded.png', :size => "18x18" %>
+      Center map on my location
+      <div class='disclosed'>
+        <%= image_tag 'arrow_right.png', :size => '40x40' %>
+      </div>
+      <div class='clearfix'></div>
+    </div>
+  {{/if}}
+
+  <form id='search_form'>
+    <div class='input_holder'>
+      <input placeholder='Enter address or rink name' type='text' id='query' />
+    </div>
+  </form>
+</script>
