@@ -352,6 +352,10 @@ input, button {
 
     background: -webkit-gradient(linear, left top, left bottom, from(#555), to(#333));
 
+    box-shadow: 0 2px 3px rgba(20, 20, 20, 0.5);
+
+    z-index: 10000;
+
     li {
       width: 50%;
       display: block;
@@ -403,6 +407,24 @@ input, button {
 
     font-size: 14px;
     line-height: 1.2;
+  }
+
+  .map_holder {
+    padding: 0;
+    margin: 0 0 -5px 0;
+
+    z-index: -1;
+    text-align: center;
+    position: relative;
+
+    img {
+      z-index: -2;
+      max-width: 100%;
+      max-height: 150px;
+
+      margin: 0;
+      padding: 0;
+    }
   }
 
   tr { border-top: 1px solid #FFF; }

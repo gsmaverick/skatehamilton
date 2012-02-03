@@ -19,6 +19,9 @@
     <li><%= link_to 'City Info', '#' %></li>
   </ul>
 
+  <div class='map_holder'>
+    <img src='http://maps.googleapis.com/maps/api/staticmap?center=Fey%20Dr,%20Burlingame,%20CA%2094010,%20United%20States&size=480x150&maptype=roadmap&markers=size:med%7CFey%20Dr,%20Burlingame,%20CA%2094010,%20United%20States&sensor=false' /></div>
+
   <h4 class='first'>Activities</h4>
   {{#if hasActivities}}
     <table border='0' class='activities' cellspacing='0' style='width:100%;' id='activities'>

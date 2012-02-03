@@ -1,6 +1,6 @@
 <script id='rink-list-item-template' type='text/x-handlebars-template'>
   <div class='icon'>
-  	<%= image_tag '{{rink_type}}.png' %>
+  	<img src='<%= asset_path "{{rink_type}}.png" %>' />
   </div>
   <div class='info'>
     <h3>{{name}}</h3>
