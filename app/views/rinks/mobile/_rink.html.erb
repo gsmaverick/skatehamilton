@@ -15,12 +15,13 @@
   </div>
 
   <ul>
-    <li><%= link_to 'Directions', '#' %></li>
-    <li><%= link_to 'City Info', '#' %></li>
+    <li><%= link_to 'Directions', 'http://maps.google.com/maps?f=d&saddr={{address}}' %></li>
+    <li><%= link_to 'City Info', 'http://www.hamilton.ca/CultureandRecreation/Recreation/CentresPoolsArenas/arenaListing.htm' %></li>
   </ul>
 
   <div class='map_holder'>
-    <img src='http://maps.googleapis.com/maps/api/staticmap?center=Fey%20Dr,%20Burlingame,%20CA%2094010,%20United%20States&size=480x150&maptype=roadmap&markers=size:med%7CFey%20Dr,%20Burlingame,%20CA%2094010,%20United%20States&sensor=false' /></div>
+    <img src='http://maps.googleapis.com/maps/api/staticmap?center={{latitude}},{{longitude}}&size=480x150&maptype=roadmap&markers=size:med%7C{{latitude}},{{longitude}}&sensor=false' />
+  </div>
 
   <h4 class='first'>Activities</h4>
   {{#if hasActivities}}

@@ -79,10 +79,11 @@ SH.app.index = function() {
 };
 
 SH.app.showMap = function() {
-  this.state = 'map';
+  this.state = 'map'; 
   console.log('map');
   $('#map').show();
   $('#rink_list').hide();
+  this.closeRinkDetails();
   this.mapView.trigger('resize');
   this.mapView.updateCenter(this.mapView.locationMarker.position);
 };
